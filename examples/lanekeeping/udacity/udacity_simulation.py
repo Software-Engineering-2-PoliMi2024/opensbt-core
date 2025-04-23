@@ -60,13 +60,12 @@ class UdacitySimulator(Simulator):
         do_visualize: bool = False,
     ) -> List[SimulationOutput]:
         """
-        Runs all indicidual simulations and returns simulation outputs
+        Runs all individual simulations and returns simulation outputs
         """
         results = []
         test_generator = CustomRoadGenerator(map_size=250,
                                             num_control_nodes=len(list_individuals[0]),
                                             seg_length=config.SEG_LENGTH)
-        file_path = "/home/sorokin/Projects/testing/Multi-Simulation/opensbt-multisim/road_generator/roads_matteo_maxibon.txt"
         env = None
         # obs, done, info = env.observe()
         agent = SupervisedAgent(
