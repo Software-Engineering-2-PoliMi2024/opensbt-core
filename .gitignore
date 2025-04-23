@@ -47,3 +47,11 @@ tests/output/**
 #docs
 docs/_build/**
 docs/build/**
+
+#Simulator
+examples/lanekeeping/Simulator/
+
+#Model
+examples/lanekeeping/SelfDrivingModels/
+
+unitylog.txt

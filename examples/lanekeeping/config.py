@@ -3,14 +3,14 @@ import os
 ########## DNN Model
 
 # DNN_MODEL_PATH = "./dnn_models/maxibon/mixed-chauffeur.h5
-DNN_MODEL_PATH=r"/home/sorokin/Projects/testing/Multi-Simulation/opensbt-multisim/dnn_models/maxibon/mixed-epoch.h5"
+DNN_MODEL_PATH=r"./examples/lanekeeping/SelfDrivingModels/mixed-chauffeur.h5"
 # DNN_MODEL_PATH= r"C:\Users\Lev\Documents\fortiss\projects\testing\Multi-Simulation\opensbt-multisim\dnn_models\maxibon\mixed-epoch.h5"
 # DNN_MODEL_PATH = "./dnn_models/maxibon/mixed-dave2.h5
 
 ######## Simulators
 
-DONKEY_EXE_PATH = "/home/sorokin/Downloads/donkeysim-maxibon-linux/donkeysim-maxibon-linux.x86_64"
-UDACITY_EXE_PATH = "/home/sorokin/Downloads/udacitysim-maxibon-linux/udacitysim-maxibon-linux.x86_64"
+# DONKEY_EXE_PATH = "/home/sorokin/Downloads/donkeysim-maxibon-linux/donkeysim-maxibon-linux.x86_64"
+UDACITY_EXE_PATH = "./examples/lanekeeping/Simulator/ubuntu_binaries/ubuntu.x86_64"
 
 # UDACITY_EXE_PATH = "C:\\Users\\Lev\\Downloads\\udacitysim-maxibon-win64\\self_driving_car_nanodegree_program.exe"
 
