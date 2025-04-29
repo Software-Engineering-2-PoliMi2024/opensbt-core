@@ -53,11 +53,7 @@ class UdacitySimulator(Simulator):
     @staticmethod
     def simulate(
         list_individuals: List[IndividualSimulated],
-        variable_names: List[str],
-        scenario_path: str,
-        sim_time: float,
-        time_step: float,
-        do_visualize: bool = False,
+        variable_names: List[str]
     ) -> List[SimulationOutput]:
         """
         Runs all individual simulations and returns simulation outputs

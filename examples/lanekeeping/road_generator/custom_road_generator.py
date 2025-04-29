@@ -160,7 +160,7 @@ class CustomRoadGenerator(RoadGenerator):
 
     def _get_initial_control_node(self) -> Tuple[float, float, float, float]:
         x0, y0, z, width = self.initial_node
-        x, y = self._get_next_xy(x0, y0, 270, self.seg_length)
+        x, y = self._get_next_xy(x0, y0, 0, self.seg_length)
 
         return x, y, z, width
 
@@ -246,5 +246,5 @@ if __name__ == "__main__":
         print(f"num turns: {road.compute_num_turns()}")
 
         road_test_visualizer = RoadTestVisualizer(map_size=map_size)
-        road_test_visualizer.visualize_road_test(road=road, folder_path="./road_generator/", filename=f"road_custom_{str(angles)}")
+        road_test_visualizer.visualize_road_test(road=road, plot_control_points=True, folder_path="./road_generator/", filename=f"road_custom_{str(angles)}")
     
