@@ -49,9 +49,10 @@ docs/_build/**
 docs/build/**
 
 #Simulator
-examples/lanekeeping/Simulator/
+lanekeeping/Simulator/
 
 #Model
-examples/lanekeeping/SelfDrivingModels/
+lanekeeping/SelfDrivingModels/*
+!lanekeeping/SelfDrivingModels/keep.txt
 
 unitylog.txt
