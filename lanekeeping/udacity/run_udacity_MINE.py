@@ -85,3 +85,43 @@ print(UdacitySimulator.simulate([
 
 # res = optimizer.run()
 # res.write_results(params=optimizer.parameters)
+
+from examples.lanekeeping.udacity.udacity_simulation import UdacitySimulator
+from opensbt.simulation.simulator import SimulationOutput
+from typing import List
+import optuna
+import os
+from dotenv import load_dotenv
+# Load environment variables from a .env file
+load_dotenv()
+
+# Retrieve database URL from environment variables
+DATABASE_URL = os.getenv("OPTUNA_URL")
+
+def objective(trial: optuna.Trial) -> float:
+    theta1 = trial.suggest_float("angle1", 0, 90)
+    theta2 = trial.suggest_float("angle2", 0, 90)
+    result: SimulationOutput = UdacitySimulator.simulate([
+        [theta1, theta2],
+        ], [
+        "angle1",
+        "angle2",
+        "angle3",
+        "angle4",
+        "angle5"])[0]
+    return max(result.otherParams['xte'])
+
+
+if __name__ == "__main__":
+    # Create a study object
+    study = optuna.create_study(
+        study_name="udacity_simulation",
+        storage=DATABASE_URL,
+        direction="minimize",
+        load_if_exists=True,)
+    # Optimize the objective function
+    study.optimize(objective, n_trials=100)
+
+    # Print the best parameters and value
+    print("Best parameters: ", study.best_params)
+    print("Best value: ", study.best_value)
