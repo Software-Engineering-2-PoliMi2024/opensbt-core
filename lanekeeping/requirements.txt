@@ -9,7 +9,7 @@ tensorflow==2.9.2
 typing_extensions==4.7.1
 pandas
 Shapely==1.8.1
-matplotlib==3.3.4
+matplotlib==3.7.4 # from 3.3.4
 descartes==1.1.0
 python-socketio==4.5.1
 Flask==2.0.0
