@@ -35,7 +35,6 @@ class SampleBase:
         for i in range(self.sampleDimension):
             index.append(
                 int((sample[i] - self.sampleRanges[i][0]) / self.gridSize))
-        print(index)
         return tuple(index)
 
     def addSample(self, sample: List[float]):
@@ -62,8 +61,6 @@ class SampleBase:
         index = self.getSampleIndex(sample)
         index = tuple([slice(max(0, i - 1), min(i + 2, self.binNumbers[j]), 1)
                        for j, i in enumerate(index)])
-        print(index)
-        print(self.samples[index])
         neighbours = [sample for sublist in self.samples[index].flat
                       for sample in sublist if len(sublist) != 0]
         return neighbours

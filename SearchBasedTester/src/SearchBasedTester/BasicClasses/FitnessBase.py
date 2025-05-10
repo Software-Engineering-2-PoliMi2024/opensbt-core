@@ -1,5 +1,6 @@
 from typing import List, Tuple, Dict, Any
 import numpy as np
+from operator import itemgetter
 
 
 class FitnessBase:
@@ -21,3 +22,11 @@ class FitnessBase:
         :return: The fitness of the sample
         """
         return self.fitnesses.get(tuple(sample), None)
+
+    def getFitnesses(self, samples: List[List[float]]) -> List[float]:
+        """
+        Get the fitnesses of a list of samples from the dictionary
+        :param samples: The samples to get the fitnesses for
+        :return: The fitnesses of the samples
+        """
+        return itemgetter(*map(tuple, samples))(self.fitnesses)
