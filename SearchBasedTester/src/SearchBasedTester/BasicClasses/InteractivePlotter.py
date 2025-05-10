@@ -10,6 +10,7 @@ import seaborn as sns
 
 class InteractivePlotter:
     def __init__(self):
+        plt.ioff()
         self.fig, self.axs = plt.subplots(1, 2, figsize=(16, 8))
 
     def __call__(self, sampleBase: SampleBase, fitnessBase: FitnessBase, f=lambda x: x):
