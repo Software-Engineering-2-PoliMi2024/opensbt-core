@@ -56,3 +56,5 @@ SelfDrivingModels/*
 SelfDrivingModels/keep.txt
 
 unitylog.txt
+
+*.env
