@@ -52,32 +52,32 @@ import lanekeeping.config as config
 from lanekeeping.self_driving.supervised_agent import SupervisedAgent
 from timeit import default_timer as timer
 import logging as log
+from .UdacitySimulatorConfig import UdacitySimulatorConfig
 
 
 class UdacitySimulator(Simulator):
-    # (x, y, z, width of road
-    # initial_pos = (125, 1.90000000, 1.8575, 8)
-    initial_pos = (125.0, 0, -28.0, 8)
-
     @staticmethod
     def simulate(
-        list_individuals: List[IndividualSimulated],
+        simulator_config: UdacitySimulatorConfig,
     ) -> List[SimulationOutput]:
         """
         Runs all individual simulations and returns simulation outputs
         """
+        # TODO: maybe e possibility to run multiple configs in this loop
+        list_individuals = [simulator_config.angles]
+
         results = []
-        test_generator = CustomRoadGenerator(map_size=250,
+        test_generator = CustomRoadGenerator(map_size=simulator_config.map_size,
                                              num_control_nodes=len(
                                                  list_individuals[0]),
-                                             seg_length=config.SEG_LENGTH)
+                                             seg_length=simulator_config.segLength)
         env = None
         # obs, done, info = env.observe()
         agent = SupervisedAgent(
             env_name=config.UDACITY_SIM_NAME,
             model_path=config.DNN_MODEL_PATH,
-            min_speed=config.MIN_SPEED,
-            max_speed=config.MAX_SPEED,
+            min_speed=simulator_config.minSpeed,
+            max_speed=simulator_config.maxSpeed,
             input_shape=config.INPUT_SHAPE,
             predict_throttle=False,
             fake_images=False
@@ -95,7 +95,7 @@ class UdacitySimulator(Simulator):
 
                 angles = UdacitySimulator._process_simulation_vars(ind)
                 road = test_generator.generate(
-                    starting_pos=UdacitySimulator.initial_pos,
+                    starting_pos=simulator_config.initial_position,
                     angles=angles,
                     simulator_name=config.UDACITY_SIM_NAME)
                 # road = test_generator.generate()
@@ -168,10 +168,10 @@ class UdacitySimulator(Simulator):
                     time_elapsed = int(end - start)
                     if time_elapsed % 2 == 0:
                         pass  # print(f"time_elapsed: {time_elapsed}")
-                    elif time_elapsed > config.TIME_LIMIT:
+                    elif time_elapsed > simulator_config.maxTime:
                         # print(f"Over time limit, terminating.")
                         done = True
-                    elif abs(info["cte"]) > config.MAX_XTE:
+                    elif abs(info["cte"]) > simulator_config.maxXTE:
                         # print("Is above MAXIMAL_XTE. Terminating.")
                         done = True
                     else:

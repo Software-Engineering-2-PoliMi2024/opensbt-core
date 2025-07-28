@@ -12,14 +12,8 @@ UDACITY_EXE_PATH = "./Simulator/ubuntu_binaries/ubuntu.x86_64"
 IN_WIDTH = 320
 IN_HEIGHT = 160
 
-DEFAULT_THROTTLE = 0.1  # Not used
-
-
 ROAD_WIDTH = 8.0  # Used but useless as far as I have tested
-# NUM_CONTROL_NODES = 5   #Not used
 NUM_SAMPLED_POINTS = 100  # Number of points used to build the road
-MAX_ANGLE = 270  # Not used
-MIN_ANGLE = 20  # Not used
 SEG_LENGTH = 25  # Length of each segment in the road
 
 MAX_EPISODE_STEPS = 2000
