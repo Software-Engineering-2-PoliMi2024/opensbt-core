@@ -1,36 +1,26 @@
 import os
 
 # DNN Model
-
-# DNN_MODEL_PATH = "./dnn_models/maxibon/mixed-chauffeur.h5
 DNN_MODEL_PATH = r"./SelfDrivingModels/mixed-chauffeur.h5"
-# DNN_MODEL_PATH= r"C:\Users\Lev\Documents\fortiss\projects\testing\Multi-Simulation\opensbt-multisim\dnn_models\maxibon\mixed-epoch.h5"
-# DNN_MODEL_PATH = "./dnn_models/maxibon/mixed-dave2.h5
+
 
 # Simulators
-
-# DONKEY_EXE_PATH = "/home/sorokin/Downloads/donkeysim-maxibon-linux/donkeysim-maxibon-linux.x86_64"
 UDACITY_EXE_PATH = "./Simulator/ubuntu_binaries/ubuntu.x86_64"
-
-# UDACITY_EXE_PATH = "C:\\Users\\Lev\\Downloads\\udacitysim-maxibon-win64\\self_driving_car_nanodegree_program.exe"
-
-# DONKEY_EXE_PATH = "C:\\DonkeySimWindows\\donkey_sim.exe"
-# UDACITY_EXE_PATH = "C:\\UdacitySimWindows\\self_driving_car_nanodegree_program.exe"
 
 ################
 
 IN_WIDTH = 320
 IN_HEIGHT = 160
 
-DEFAULT_THROTTLE = 0.1
+DEFAULT_THROTTLE = 0.1  # Not used
 
 MAX_XTE = 3  # used
 
-ROAD_WIDTH = 8.0
+ROAD_WIDTH = 8.0  # Used but useless as far as I have tested
 # NUM_CONTROL_NODES = 5   #Not used
-NUM_SAMPLED_POINTS = 20
-MAX_ANGLE = 270
-MIN_ANGLE = 20
+NUM_SAMPLED_POINTS = 100  # Number of points used to build the road
+MAX_ANGLE = 270  # Not used
+MIN_ANGLE = 20  # Not used
 
 MAX_EPISODE_STEPS = 2000
 
@@ -39,16 +29,16 @@ INPUT_SHAPE = (IN_HEIGHT, IN_WIDTH, IMAGE_CHANNELS)
 INPUT_DIM = INPUT_SHAPE
 DISPLACEMENT = 2
 
-MAX_SPEED = 30
-MAX_SPEED_DONKEY = MAX_SPEED + 4
-MIN_SPEED = 10
+MAX_SPEED = 30  # Maximum speed for the car
+MIN_SPEED = 10  # Minimum speed for the car
 
-MAP_SIZE = 250
+MAP_SIZE = 250  # Size of the map in meters
 
+# The portion of the image to crop in the Udacity simulator, it will keep the vertical strip of the image whose x coordinate is between [0] and [1]
 CROP_UDACITY = [60, -25]
 CROP_DONKEY = [60, 0]
 
-
+# Wait time for the Udacity simulator to load
 UDACITY_SLEEP = 2
 
 STEERING_CORRECTION = 1
