@@ -19,7 +19,7 @@ class RoadTestVisualizer:
     """
 
     little_triangle = Polygon([(2, 0), (0, -1), (0, 1), (2, 0)])
-    square = Polygon([(1, 1), (1, -1), (-1, -1), (-1, 1), (1,1)])
+    square = Polygon([(1, 1), (1, -1), (-1, -1), (-1, 1), (1, 1)])
 
     def __init__(self, map_size):
         self.map_size = map_size
@@ -56,22 +56,28 @@ class RoadTestVisualizer:
 
         # plt.draw()
         # plt.pause(0.001)
-        
+
         # Plot the map. Trying to re-use an artist in more than one Axes which is supported
-        map_patch = patches.Rectangle((0, 0), self.map_size, self.map_size, linewidth=1, edgecolor='black', facecolor='none')
+        map_patch = patches.Rectangle(
+            (0, 0), self.map_size, self.map_size, linewidth=1, edgecolor='black', facecolor='none')
         plt.gca().add_patch(map_patch)
 
         # Road Geometry.
         if not invert:
-            road_poly = LineString([(t[0], t[1]) for t in road.get_concrete_representation(to_plot=True)]).buffer(8.0, cap_style=2, join_style=2)
+            road_poly = LineString([(t[0], t[1]) for t in road.get_concrete_representation(
+                to_plot=True)]).buffer(8.0, cap_style=2, join_style=2)
         else:
-            road_poly = LineString([(t[0], t[1]) for t in road.get_inverse_concrete_representation(to_plot=True)]).buffer(8.0, cap_style=2, join_style=2)
+            road_poly = LineString([(t[0], t[1]) for t in road.get_inverse_concrete_representation(
+                to_plot=True)]).buffer(8.0, cap_style=2, join_style=2)
 
         if car_trajectory is not None or plot_control_points:
             # blur the road such that the trajectory of the car is visible on the road
-            road_patch = PolygonPatch(road_poly, fc='gray', ec='dimgray', alpha=0.4)  # ec='#555555', alpha=0.5, zorder=4)
+            # ec='#555555', alpha=0.5, zorder=4)
+            road_patch = PolygonPatch(
+                road_poly, fc='gray', ec='dimgray', alpha=0.4)
         else:
-            road_patch = PolygonPatch(road_poly, fc='gray', ec='dimgray')  # ec='#555555', alpha=0.5, zorder=4)
+            # ec='#555555', alpha=0.5, zorder=4)
+            road_patch = PolygonPatch(road_poly, fc='gray', ec='dimgray')
 
         plt.gca().add_patch(road_patch)
 
@@ -80,8 +86,10 @@ class RoadTestVisualizer:
             sx = [t[0] for t in road.get_concrete_representation(to_plot=True)]
             sy = [t[1] for t in road.get_concrete_representation(to_plot=True)]
         else:
-            sx = [t[0] for t in road.get_inverse_concrete_representation(to_plot=True)]
-            sy = [t[1] for t in road.get_inverse_concrete_representation(to_plot=True)]
+            sx = [t[0]
+                  for t in road.get_inverse_concrete_representation(to_plot=True)]
+            sy = [t[1]
+                  for t in road.get_inverse_concrete_representation(to_plot=True)]
 
         plt.plot(sx, sy, 'yellow')
 
@@ -92,7 +100,8 @@ class RoadTestVisualizer:
         current_angle = atan2(delta_y, delta_x)
 
         rotation_angle = degrees(current_angle)
-        transformed_fov = rotate(self.little_triangle, origin=(0, 0), angle=rotation_angle)
+        transformed_fov = rotate(self.little_triangle,
+                                 origin=(0, 0), angle=rotation_angle)
         transformed_fov = translate(transformed_fov, xoff=sx[0], yoff=sy[0])
         plt.plot(*transformed_fov.exterior.xy, color='black')
 
@@ -103,7 +112,8 @@ class RoadTestVisualizer:
         current_angle = atan2(delta_y, delta_x)
 
         rotation_angle = degrees(current_angle)
-        transformed_fov = rotate(self.square, origin=(0, 0), angle=rotation_angle)
+        transformed_fov = rotate(
+            self.square, origin=(0, 0), angle=rotation_angle)
         transformed_fov = translate(transformed_fov, xoff=sx[-1], yoff=sy[-1])
         plt.plot(*transformed_fov.exterior.xy, color='black')
 
@@ -119,7 +129,8 @@ class RoadTestVisualizer:
             control_points_ys = [cp.y for cp in road.control_points]
             print(control_points_xs)
             print(control_points_ys)
-            plt.scatter(control_points_xs, control_points_ys, color="red", marker="*", s=50)
+            plt.scatter(control_points_xs, control_points_ys,
+                        color="red", marker="*", s=50)
 
         plt.pause(0.001)
 
@@ -143,22 +154,26 @@ class RoadTestVisualizer:
 
         # plt.draw()
         # plt.pause(0.001)
-        
+
         # Plot the map. Trying to re-use an artist in more than one Axes which is supported
         # map_patch = patches.Rectangle((0, 0), self.map_size, self.map_size, linewidth=1, edgecolor='black', facecolor='none')
         # plt.gca().add_patch(map_patch)
 
         # Road Geometry.
         if not invert:
-            road_poly = LineString([(t[0], t[1]) for t in road_points]).buffer( int(width/2), cap_style=2, join_style=2)
+            road_poly = LineString([(t[0], t[1]) for t in road_points]).buffer(
+                int(width/2), cap_style=2, join_style=2)
         # else:
         #     road_poly = LineString([(t[0], t[1]) for t in road_points]).buffer(8.0, cap_style=2, join_style=2)
 
         if car_trajectory is not None or plot_control_points:
             # blur the road such that the trajectory of the car is visible on the road
-            road_patch = PolygonPatch(road_poly, fc='gray', ec='dimgray', alpha=0.3)  # ec='#555555', alpha=0.5, zorder=4)
+            # ec='#555555', alpha=0.5, zorder=4)
+            road_patch = PolygonPatch(
+                road_poly, fc='gray', ec='dimgray', alpha=0.3)
         else:
-            road_patch = PolygonPatch(road_poly, fc='gray', ec='dimgray')  # ec='#555555', alpha=0.5, zorder=4)
+            # ec='#555555', alpha=0.5, zorder=4)
+            road_patch = PolygonPatch(road_poly, fc='gray', ec='dimgray')
 
         plt.gca().add_patch(road_patch)
 
@@ -179,7 +194,8 @@ class RoadTestVisualizer:
         current_angle = atan2(delta_y, delta_x)
 
         rotation_angle = degrees(current_angle)
-        transformed_fov = rotate(self.little_triangle, origin=(0, 0), angle=rotation_angle)
+        transformed_fov = rotate(self.little_triangle,
+                                 origin=(0, 0), angle=rotation_angle)
         transformed_fov = translate(transformed_fov, xoff=sx[0], yoff=sy[0])
         plt.plot(*transformed_fov.exterior.xy, color='black')
 
@@ -207,7 +223,7 @@ class RoadTestVisualizer:
         #     print(control_points_xs)
         #     print(control_points_ys)
         #     plt.scatter(control_points_xs, control_points_ys, color="red", marker="*", s=50)
-        
+
         if do_save:
             plt.savefig(os.path.join(folder_path, '{}.png'.format(filename)))
             plt.clf()
