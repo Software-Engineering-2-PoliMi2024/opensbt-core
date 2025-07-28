@@ -55,13 +55,13 @@ import logging as log
 
 
 class UdacitySimulator(Simulator):
+    # (x, y, z, width of road
     # initial_pos = (125, 1.90000000, 1.8575, 8)
     initial_pos = (125.0, 0, -28.0, 8)
 
     @staticmethod
     def simulate(
         list_individuals: List[IndividualSimulated],
-        variable_names: List[str]
     ) -> List[SimulationOutput]:
         """
         Runs all individual simulations and returns simulation outputs
@@ -93,9 +93,7 @@ class UdacitySimulator(Simulator):
                 steerings = []
                 throttles = []
 
-                instance_values = [v for v in zip(variable_names, ind)]
-                angles = UdacitySimulator._process_simulation_vars(
-                    instance_values)
+                angles = UdacitySimulator._process_simulation_vars(ind)
                 road = test_generator.generate(
                     starting_pos=UdacitySimulator.initial_pos,
                     angles=angles,
@@ -245,13 +243,9 @@ class UdacitySimulator(Simulator):
 
     @staticmethod
     def _process_simulation_vars(
-        instance_values: List[Tuple[str, float]],
+        instance_values: List[float]
     ) -> Tuple[List[int]]:
-        angles = []
-        for i in range(0, len(instance_values)):
-            new_angle = int(instance_values[i][1])
-            angles.append(new_angle)
-
+        angles = [int(round(x)) for x in instance_values]
         return angles
 
     @staticmethod
