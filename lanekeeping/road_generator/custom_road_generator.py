@@ -41,6 +41,18 @@ class CustomRoadGenerator(RoadGenerator):
         bbox_size=(0, 0, 250, 250),
         max_angles=None
     ):
+        """CustomRoadGenerator constructor.
+
+        Args:
+            map_size (int): Size of the map. The map is a square with dimensions map_size x map_size. (default: 250)
+            num_control_nodes (int, optional): Number of control nodes for the road. Defaults to 8.
+            max_angle (int, optional): Maximum angle for the road segments. Defaults to 90.
+            seg_length (int, optional): Length of the road segments. Defaults to 25.
+            num_spline_nodes (int, optional): Number of spline nodes for the road. Defaults to 20.
+            initial_node (tuple, optional): Initial node for the road. Defaults to (0.0, 0.0, 0.0, config.ROAD_WIDTH).
+            bbox_size (tuple, optional): Bounding box size for the road. Defaults to (0, 0, 250, 250).
+            max_angles (list, optional): List of maximum angles for each control node. Defaults to None.
+        """
         assert num_control_nodes > 1 and num_spline_nodes > 0
         assert 0 <= max_angle <= 360
         assert seg_length > 0
@@ -89,15 +101,21 @@ class CustomRoadGenerator(RoadGenerator):
         # i_valid is the number of valid generated control nodes.
         i_valid = 0
 
+        # The cumulative turning angle of the nodes
+        cumulative_angle = 0
+
         while i_valid < self.num_control_nodes:
             seg_length = self.seg_length
             if seg_lengths is not None and i_valid < len(seg_lengths):
                 seg_length = seg_lengths[i_valid]
+
+            cumulative_angle += angles[i_valid]
+
             nodes.append(
                 self._get_next_node(
                     nodes[-2],
                     nodes[-1],
-                    angles[i_valid],
+                    cumulative_angle,
                     self._get_next_max_angle(i_valid),
                     seg_length,
                 )
@@ -247,4 +265,4 @@ if __name__ == "__main__":
 
         road_test_visualizer = RoadTestVisualizer(map_size=map_size)
         road_test_visualizer.visualize_road_test(
-            road=road, plot_control_points=True, folder_path="./road_generator/", filename=f"road_custom_{str(angles)}")
+            road=road, plot_control_points=True, folder_path="./", filename=f"road_custom_{str(angles)}")
