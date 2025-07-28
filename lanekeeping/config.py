@@ -14,13 +14,13 @@ IN_HEIGHT = 160
 
 DEFAULT_THROTTLE = 0.1  # Not used
 
-MAX_XTE = 3  # used
 
 ROAD_WIDTH = 8.0  # Used but useless as far as I have tested
 # NUM_CONTROL_NODES = 5   #Not used
 NUM_SAMPLED_POINTS = 100  # Number of points used to build the road
 MAX_ANGLE = 270  # Not used
 MIN_ANGLE = 20  # Not used
+SEG_LENGTH = 25  # Length of each segment in the road
 
 MAX_EPISODE_STEPS = 2000
 
@@ -41,9 +41,14 @@ CROP_DONKEY = [60, 0]
 # Wait time for the Udacity simulator to load
 UDACITY_SLEEP = 2
 
+# Scalar multiplied to the steering angle to correct it ( > 1 means more steering, < 1 means less steering)
 STEERING_CORRECTION = 1
+# Max # of seconds the simulation can run
 TIME_LIMIT = 30
+# If True, the XTE will be capped to MAX_XTE
 CAP_XTE = True
+# Max cross-track error (XTE) allowed
+MAX_XTE = 3
 
 # USI
 
@@ -61,21 +66,3 @@ TEST_GENERATORS = ["random", "sin"]
 
 IMAGE_HEIGHT = IN_HEIGHT
 IMAGE_WIDTH = IN_WIDTH
-
-WAIT_RESETCAR = 3
-MAX_CTE_ERROR = MAX_XTE
-
-# BEAMNG_USER = r"C:\\Users\\Lev\\Documents\\BeamNG_User\\"
-BEAMNG_USER = r"C:\\Users\\sorokin\\Documents\\BeamNG_User\\"
-# BEAMNG_HOME = r"C:\BeamNG\BeamNG.drive-0.23.5.1.12888\\"
-BEAMNG_HOME = r"C:\BeamNG.tech.v0.23.5.1\BeamNG.drive-0.23.5.1.12888\\"
-
-SEG_LENGTH = 25
-CRITICAL_XTE = 2.2
-CRITICAL_AVG_XTE = 1
-MAX_ACC = 2.0
-
-DO_PLOT_GIFS = True
-FPS_DESIRED_DONKEY = 19
-
-TIME_WAIT_DONKEY_RERUN = 3
