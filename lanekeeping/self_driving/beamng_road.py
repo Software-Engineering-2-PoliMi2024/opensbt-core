@@ -8,7 +8,8 @@ from lanekeeping.self_driving.road import Road
 
 class BeamNGRoad(Road):
     def __init__(self, road_width: int, road_points: List[Point], control_points: List[Point]):
-        super().__init__(road_width=road_width, road_points=road_points, control_points=control_points)
+        super().__init__(road_width=road_width,
+                         road_points=road_points, control_points=control_points)
 
     def get_concrete_representation(self, to_plot: bool = False) -> List[Tuple4F]:
         return [(point.x, point.y, -28.0, self.road_width) for point in self.road_points]

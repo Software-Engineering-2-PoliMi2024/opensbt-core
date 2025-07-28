@@ -1,16 +1,16 @@
 import os
 
-########## DNN Model
+# DNN Model
 
 # DNN_MODEL_PATH = "./dnn_models/maxibon/mixed-chauffeur.h5
-DNN_MODEL_PATH=r"./lanekeeping/SelfDrivingModels/mixed-chauffeur.h5"
+DNN_MODEL_PATH = r"./SelfDrivingModels/mixed-chauffeur.h5"
 # DNN_MODEL_PATH= r"C:\Users\Lev\Documents\fortiss\projects\testing\Multi-Simulation\opensbt-multisim\dnn_models\maxibon\mixed-epoch.h5"
 # DNN_MODEL_PATH = "./dnn_models/maxibon/mixed-dave2.h5
 
-######## Simulators
+# Simulators
 
 # DONKEY_EXE_PATH = "/home/sorokin/Downloads/donkeysim-maxibon-linux/donkeysim-maxibon-linux.x86_64"
-UDACITY_EXE_PATH = "./lanekeeping/Simulator/ubuntu_binaries/ubuntu.x86_64"
+UDACITY_EXE_PATH = "./Simulator/ubuntu_binaries/ubuntu.x86_64"
 
 # UDACITY_EXE_PATH = "C:\\Users\\Lev\\Downloads\\udacitysim-maxibon-win64\\self_driving_car_nanodegree_program.exe"
 
@@ -24,7 +24,7 @@ IN_HEIGHT = 160
 
 DEFAULT_THROTTLE = 0.1
 
-MAX_XTE = 3 #used
+MAX_XTE = 3  # used
 
 ROAD_WIDTH = 8.0
 # NUM_CONTROL_NODES = 5   #Not used
@@ -45,8 +45,8 @@ MIN_SPEED = 10
 
 MAP_SIZE = 250
 
-CROP_UDACITY = [60,-25]
-CROP_DONKEY = [60,0]
+CROP_UDACITY = [60, -25]
+CROP_DONKEY = [60, 0]
 
 
 UDACITY_SLEEP = 2
@@ -61,7 +61,8 @@ BEAMNG_SIM_NAME = "beamng"
 DONKEY_SIM_NAME = "donkey"
 UDACITY_SIM_NAME = "udacity"
 MOCK_SIM_NAME = "mock"
-SIMULATOR_NAMES = [BEAMNG_SIM_NAME, DONKEY_SIM_NAME, UDACITY_SIM_NAME, MOCK_SIM_NAME]
+SIMULATOR_NAMES = [BEAMNG_SIM_NAME, DONKEY_SIM_NAME,
+                   UDACITY_SIM_NAME, MOCK_SIM_NAME]
 AGENT_TYPE_RANDOM = "random"
 AGENT_TYPE_SUPERVISED = "supervised"
 AGENT_TYPE_AUTOPILOT = "autopilot"

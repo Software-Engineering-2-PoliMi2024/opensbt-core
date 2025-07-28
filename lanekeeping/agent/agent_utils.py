@@ -4,22 +4,26 @@ import numpy as np
 from lanekeeping.config import UDACITY_SIM_NAME, DONKEY_SIM_NAME
 from lanekeeping.config import IN_WIDTH, IN_HEIGHT, CROP_DONKEY, CROP_UDACITY
 
+
 def crop(image: np.ndarray, simulator_name: str) -> np.ndarray:
     """
     Crop the image (removing the sky at the top and the car front at the bottom)
     """
     if simulator_name == UDACITY_SIM_NAME:
-        return image[CROP_UDACITY[0]:CROP_UDACITY[1], :, :]  # remove the sky and the car front (from SelfOracle)
+        # remove the sky and the car front (from SelfOracle)
+        return image[CROP_UDACITY[0]:CROP_UDACITY[1], :, :]
     elif simulator_name == DONKEY_SIM_NAME:
-        return image[CROP_DONKEY[0]:CROP_DONKEY[1], :, :]  # remove the sky and the car front (from SelfOracle)
+        # remove the sky and the car front (from SelfOracle)
+        return image[CROP_DONKEY[0]:CROP_DONKEY[1], :, :]
     else:
         print("Name not known for applying cropping.")
 
-def resize(image: np.ndarray, width = None, height = None) -> np.ndarray:
+
+def resize(image: np.ndarray, width=None, height=None) -> np.ndarray:
     """
     Resize the image to the input shape used by the network model
     """
-    return cv2.resize(image, (IN_WIDTH  if width == None else width , IN_HEIGHT if height == None else height), cv2.INTER_AREA)
+    return cv2.resize(image, (IN_WIDTH if width == None else width, IN_HEIGHT if height == None else height), cv2.INTER_AREA)
 
 
 def bgr2yuv(image: np.ndarray) -> np.ndarray:
@@ -29,7 +33,7 @@ def bgr2yuv(image: np.ndarray) -> np.ndarray:
     return cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
 
 
-def preprocess(image: np.ndarray, width = None, height = None, simulator_name = None) -> np.ndarray:
+def preprocess(image: np.ndarray, width=None, height=None, simulator_name=None) -> np.ndarray:
     """
     Combine all preprocess functions into one
     """

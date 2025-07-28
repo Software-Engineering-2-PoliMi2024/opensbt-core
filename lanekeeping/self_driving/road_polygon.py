@@ -15,7 +15,8 @@ class RoadPolygon:
         return RoadPolygon(RoadPoints.from_nodes(nodes))
 
     def __init__(self, road_points: RoadPoints):
-        assert len(road_points.left) == len(road_points.right) == len(road_points.middle)
+        assert len(road_points.left) == len(
+            road_points.right) == len(road_points.middle)
         assert len(road_points.left) >= 2
         assert all(len(x) == 4 for x in road_points.middle)
         assert all(len(x) == 2 for x in road_points.left)
@@ -47,9 +48,11 @@ class RoadPolygon:
             left1,
             right1,
         ) in zip(self.road_points.left, self.road_points.right, self.road_points.left[1:], self.road_points.right[1:]):
-            assert len(left) >= 2 and len(right) >= 2 and len(left1) >= 2 and len(right1) >= 2
+            assert len(left) >= 2 and len(right) >= 2 and len(
+                left1) >= 2 and len(right1) >= 2
             # Ignore the z coordinate.
-            polygons.append(Polygon([left[:2], left1[:2], right1[:2], right[:2]]))
+            polygons.append(
+                Polygon([left[:2], left1[:2], right1[:2], right[:2]]))
         return polygons
 
     def _compute_polygon(self) -> Polygon:
@@ -79,14 +82,16 @@ class RoadPolygon:
         """Computes and returns a LineString representing the polyline
         of the spin (or middle) of the right lane of the road."""
         return LineString(
-            [((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2) for p1, p2 in zip(self.road_points.middle, self.road_points.right)]
+            [((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2)
+             for p1, p2 in zip(self.road_points.middle, self.road_points.right)]
         )
 
     def _compute_left_polyline(self) -> LineString:
         """Computes and returns a LineString representing the polyline
         of the spin (or middle) of the left lane of the road."""
         return LineString(
-            [((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2) for p1, p2 in zip(self.road_points.left, self.road_points.middle)]
+            [((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2)
+             for p1, p2 in zip(self.road_points.left, self.road_points.middle)]
         )
 
     def _get_neighbouring_polygons(self, i: int) -> List[int]:
@@ -144,10 +149,12 @@ class RoadPolygon:
 
 
 if __name__ == "__main__":
-    road_polygon = RoadPolygon.from_nodes([(0, 0, -28, 8), (0, 4, -28, 8), (5, 15, -28, 8), (20, -4, -28, 8)])
+    road_polygon = RoadPolygon.from_nodes(
+        [(0, 0, -28, 8), (0, 4, -28, 8), (5, 15, -28, 8), (20, -4, -28, 8)])
 
     assert not road_polygon.is_valid(), "It should be invalid"
 
-    road_polygon = RoadPolygon.from_nodes([(0, 0, -28, 8), (3, 2, -28, 8), (10, -1, -28, 8)])
+    road_polygon = RoadPolygon.from_nodes(
+        [(0, 0, -28, 8), (3, 2, -28, 8), (10, -1, -28, 8)])
 
     assert road_polygon.is_valid(), "It should be valid"

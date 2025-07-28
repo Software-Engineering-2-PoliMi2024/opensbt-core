@@ -71,7 +71,8 @@ class Road(ABC):
         return radius
 
     def compute_curvature(self, w: int = 5) -> float:
-        assert len(self.road_points) > 0, "There must be road points to compute angles"
+        assert len(
+            self.road_points) > 0, "There must be road points to compute angles"
         min_radius = np.inf
         nodes = self.road_points
         for i in range(len(nodes) - w):
@@ -89,7 +90,8 @@ class Road(ABC):
     # FIXME: a bit dirty, copied from deepjanus_test_generator
     def is_valid(self) -> bool:
         return RoadPolygon.from_nodes(self.get_concrete_representation(to_plot=True)).is_valid() and self.road_bbox.contains(
-            RoadPolygon.from_nodes([(cp.x, cp.y, cp.z, self.road_width) for cp in self.control_points[1:-1]])
+            RoadPolygon.from_nodes(
+                [(cp.x, cp.y, cp.z, self.road_width) for cp in self.control_points[1:-1]])
         )
 
     def mutate_gene(self, index: int, lower_bound: int, upper_bound: int, xy_prob: float = 0.5) -> Tuple[int, int]:
@@ -102,10 +104,12 @@ class Road(ABC):
 
         if random.random() < xy_prob:
             index_mutated = 0
-            mutated_point = Point(mutated_point.x + mut_value, mutated_point.y, mutated_point.z)
+            mutated_point = Point(
+                mutated_point.x + mut_value, mutated_point.y, mutated_point.z)
         else:
             index_mutated = 1
-            mutated_point = Point(mutated_point.x, mutated_point.y + mut_value, mutated_point.z)
+            mutated_point = Point(
+                mutated_point.x, mutated_point.y + mut_value, mutated_point.z)
 
         self.control_points[index] = mutated_point
         road_points = catmull_rom(
@@ -117,9 +121,11 @@ class Road(ABC):
     def undo_mutation(self, index: int, index_mutated: int, mut_value: int) -> None:
         mutated_point = copy.deepcopy(self.control_points[index])
         if index_mutated == 0:
-            mutated_point = Point(mutated_point.x - mut_value, mutated_point.y, mutated_point.z)
+            mutated_point = Point(
+                mutated_point.x - mut_value, mutated_point.y, mutated_point.z)
         else:
-            mutated_point = Point(mutated_point.x, mutated_point.y - mut_value, mutated_point.z)
+            mutated_point = Point(
+                mutated_point.x, mutated_point.y - mut_value, mutated_point.z)
         self.control_points[index] = mutated_point
         road_points = catmull_rom(
             [(cp.x, cp.y, cp.z, self.road_width) for cp in self.control_points[1:]], num_spline_points=NUM_SAMPLED_POINTS
@@ -128,7 +134,8 @@ class Road(ABC):
 
     def export(self) -> Dict:
         result = dict()
-        result["control_points"] = [(cp.x, cp.y, cp.z) for cp in self.control_points]
+        result["control_points"] = [(cp.x, cp.y, cp.z)
+                                    for cp in self.control_points]
         result["road_points"] = self.get_concrete_representation(to_plot=True)
         result["road_width"] = self.road_width
         return result
@@ -166,7 +173,8 @@ class Road(ABC):
             v1 = np.subtract(self.road_points[i + 1], self.road_points[i])
             angle = self.compute_angle_distance(v0=v0, v1=v1)
             distance = np.linalg.norm(v1)
-            result.append((angle, distance, [self.road_points[i + 1], self.road_points[i]]))
+            result.append(
+                (angle, distance, [self.road_points[i + 1], self.road_points[i]]))
         return result
 
     @staticmethod
@@ -257,7 +265,8 @@ class Road(ABC):
         first_super_group = self.first_super_grouper(
             it=groups, first_segment_threshold=first_segment_threshold, second_segment_threshold=second_segment_threshold
         )
-        second_super_group = self.second_super_grouper(it=first_super_group, first_segment_threshold=first_segment_threshold)
+        second_super_group = self.second_super_grouper(
+            it=first_super_group, first_segment_threshold=first_segment_threshold)
 
         num_turns = 0
         w = 5
@@ -280,6 +289,6 @@ class Road(ABC):
                 weighted_num_turns += 1 / min_radius
 
         return num_turns, weighted_num_turns
-        
+
     def get_string_repr(self):
         return self.serialize_concrete_representation(self.get_concrete_representation())

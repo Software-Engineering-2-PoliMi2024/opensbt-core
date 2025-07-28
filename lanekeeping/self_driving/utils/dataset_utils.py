@@ -34,7 +34,8 @@ def save_archive(
     tracks_control_points = []
     for track in tracks:
         tracks_concrete.append(track.get_concrete_representation(to_plot=True))
-        tracks_control_points.append([(cp.x, cp.y, cp.z) for cp in track.control_points])
+        tracks_control_points.append(
+            [(cp.x, cp.y, cp.z) for cp in track.control_points])
 
     if "supervised" not in archive_name:
         assert len(observations_array) == len(
@@ -56,14 +57,21 @@ def save_archive(
 
     logg.info("Actions: {}".format(numpy_dict["actions"].shape))
     logg.info("Observations: {}".format(numpy_dict["observations"].shape))
-    logg.info("Is success flags: {}".format(numpy_dict["is_success_flags"].shape))
-    logg.info("Tracks concrete: {}".format(numpy_dict["tracks_concrete"].shape))
-    logg.info("Tracks control points: {}".format(numpy_dict["tracks_control_points"].shape))
-    logg.info("Car positions x for each episode: {}".format(numpy_dict["car_positions_x_episodes"].shape))
-    logg.info("Car positions y for each episode: {}".format(numpy_dict["car_positions_y_episodes"].shape))
-    logg.info("Episode lengths: {}".format(numpy_dict["episode_lengths"].shape))
+    logg.info("Is success flags: {}".format(
+        numpy_dict["is_success_flags"].shape))
+    logg.info("Tracks concrete: {}".format(
+        numpy_dict["tracks_concrete"].shape))
+    logg.info("Tracks control points: {}".format(
+        numpy_dict["tracks_control_points"].shape))
+    logg.info("Car positions x for each episode: {}".format(
+        numpy_dict["car_positions_x_episodes"].shape))
+    logg.info("Car positions y for each episode: {}".format(
+        numpy_dict["car_positions_y_episodes"].shape))
+    logg.info("Episode lengths: {}".format(
+        numpy_dict["episode_lengths"].shape))
 
-    np.savez(os.path.join(archive_path, "{}.npz".format(archive_name)), **numpy_dict)
+    np.savez(os.path.join(archive_path,
+             "{}.npz".format(archive_name)), **numpy_dict)
 
 
 def _load_numpy_archive(archive_path: str, archive_name: str) -> Dict:
@@ -101,7 +109,8 @@ def load_archive_into_dataset(
     if env_name == "mixed":
         X_train, X_test, y_train, y_test = [], [], [], []
         for sim_name in SIMULATOR_NAMES:
-            filtered_archive_names = list(filter(lambda an: sim_name in an, archive_names))
+            filtered_archive_names = list(
+                filter(lambda an: sim_name in an, archive_names))
             assert (
                 len(filtered_archive_names) <= 1
             ), "There must be at most one archive name that contains {}. Found: {}".format(sim_name, filtered_archive_names)
@@ -109,7 +118,8 @@ def load_archive_into_dataset(
             if len(filtered_archive_names) == 1:
 
                 filtered_archive_name = filtered_archive_names[0]
-                numpy_dict = load_archive(archive_path=archive_path, archive_name=filtered_archive_name)
+                numpy_dict = load_archive(
+                    archive_path=archive_path, archive_name=filtered_archive_name)
                 obs = numpy_dict["observations"]
                 actions = numpy_dict["actions"]
 
@@ -140,14 +150,16 @@ def load_archive_into_dataset(
         y_train = np.concatenate(y_train)
         y_test = np.concatenate(y_test)
 
-        logg.info("Mixed training set size: {}. Mixed validation set size: {}".format(X_train.shape, X_test.shape))
+        logg.info("Mixed training set size: {}. Mixed validation set size: {}".format(
+            X_train.shape, X_test.shape))
 
         return X_train, X_test, y_train, y_test
 
     obs = []
     actions = []
     for i in range(len(archive_names)):
-        numpy_dict = load_archive(archive_path=archive_path, archive_name=archive_names[i])
+        numpy_dict = load_archive(
+            archive_path=archive_path, archive_name=archive_names[i])
         obs_i = numpy_dict["observations"]
         actions_i = numpy_dict["actions"]
         obs.append(obs_i)
@@ -166,8 +178,10 @@ def load_archive_into_dataset(
     else:
         y = actions
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_split, random_state=seed)
-    logg.info("Training set size: {}. Validation set size: {}".format(X_train.shape, X_test.shape))
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_split, random_state=seed)
+    logg.info("Training set size: {}. Validation set size: {}".format(
+        X_train.shape, X_test.shape))
 
     return X_train, X_test, y_train, y_test
 
@@ -181,7 +195,8 @@ def augment(
     Generate an augmented image and adjust steering angle.
     """
     image, y = random_flip(image=image, y=y)
-    image, y = random_translate(image=image, y=y, range_x=range_x, range_y=range_y)
+    image, y = random_translate(
+        image=image, y=y, range_x=range_x, range_y=range_y)
     if not fake_images:
         image = random_shadow(image=image)
     image = random_brightness(image=image)
@@ -208,10 +223,12 @@ def crop(image: np.ndarray, env_name: str) -> np.ndarray:
     Crop the image (removing the sky at the top and the car front at the bottom)
     """
     if env_name == BEAMNG_SIM_NAME:
-        return image[80:-1, :, :]  # remove the sky and the car front (from DeepJanus)
+        # remove the sky and the car front (from DeepJanus)
+        return image[80:-1, :, :]
 
     if env_name == UDACITY_SIM_NAME:
-        return image[60:-25, :, :]  # remove the sky and the car front (from Selforacle)
+        # remove the sky and the car front (from Selforacle)
+        return image[60:-25, :, :]
 
     if env_name == DONKEY_SIM_NAME:
         return image[60:, :, :]  # remove the sky
@@ -377,7 +394,8 @@ class DataGenerator(keras.utils.Sequence):
 
             env_name = None
             if self.env_name == "mixed":
-                X_item, env_name = self.get_index_and_env_name_mixed_data(idx=idx)
+                X_item, env_name = self.get_index_and_env_name_mixed_data(
+                    idx=idx)
             else:
                 X_item = self.X[idx]
 
@@ -387,15 +405,19 @@ class DataGenerator(keras.utils.Sequence):
                 y_item = np.asarray([y_item])
 
             if self.is_training and np.random.rand() < 0.5:
-                X_item, y_item = augment(image=X_item, y=y_item, fake_images=self.fake_images)
+                X_item, y_item = augment(
+                    image=X_item, y=y_item, fake_images=self.fake_images)
 
             if self.preprocess:
                 if self.env_name == "mixed":
                     assert env_name is not None, "Env name for mixed dataset preprocessing not assigned"
-                    X_batch[i] = preprocess(image=X_item, env_name=env_name, fake_images=self.fake_images)
+                    X_batch[i] = preprocess(
+                        image=X_item, env_name=env_name, fake_images=self.fake_images)
                 else:
-                    assert self.env_name in SIMULATOR_NAMES, "Unknown simulator name: {}".format(self.env_name)
-                    X_batch[i] = preprocess(image=X_item, env_name=self.env_name, fake_images=self.fake_images)
+                    assert self.env_name in SIMULATOR_NAMES, "Unknown simulator name: {}".format(
+                        self.env_name)
+                    X_batch[i] = preprocess(
+                        image=X_item, env_name=self.env_name, fake_images=self.fake_images)
             y_batch[i] = y_item
 
         return X_batch, y_batch
@@ -408,8 +430,10 @@ class DataGenerator(keras.utils.Sequence):
     def __getitem__(self, index):
         """Generates one batch of data"""
 
-        batch_indexes = self.indexes[index * self.batch_size : (index + 1) * self.batch_size]
-        batch_indexes = [self.indexes[batch_idx] for batch_idx in batch_indexes]
+        batch_indexes = self.indexes[index *
+                                     self.batch_size: (index + 1) * self.batch_size]
+        batch_indexes = [self.indexes[batch_idx]
+                         for batch_idx in batch_indexes]
         X_batch, y_batch = self.get_data_batch(batch_indexes=batch_indexes)
 
         return X_batch, y_batch

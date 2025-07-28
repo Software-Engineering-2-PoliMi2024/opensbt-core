@@ -1,8 +1,0 @@
-README.md
-pyproject.toml
-src/SearchBasedTester/__init__.py
-src/SearchBasedTester/example.py
-src/SearchBasedTester.egg-info/PKG-INFO
-src/SearchBasedTester.egg-info/SOURCES.txt
-src/SearchBasedTester.egg-info/dependency_links.txt
-src/SearchBasedTester.egg-info/top_level.txt

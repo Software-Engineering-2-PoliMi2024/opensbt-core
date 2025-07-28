@@ -7,8 +7,8 @@ from lanekeeping.custom_types import GymEnv
 
 
 class Agent(ABC):
-    def __init__(self, 
-                #  env: GymEnv, 
+    def __init__(self,
+                 #  env: GymEnv,
                  env_name: str):
         # self.env = env
         self.env_name = env_name

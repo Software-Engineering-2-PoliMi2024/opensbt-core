@@ -15,12 +15,13 @@ from opensbt.visualization.configuration import *
 import lanekeeping.config as config
 import logging as log
 
-def plot_gif(parameter_values, 
-            simout: SimulationOutput, 
-            savePath=None, 
-            fileName=None,
-            skip=2):
-    
+
+def plot_gif(parameter_values,
+             simout: SimulationOutput,
+             savePath=None,
+             fileName=None,
+             skip=2):
+
     if "car_length" in simout.otherParams:
         car_length = float(simout.otherParams["car_length"])
     else:
@@ -37,17 +38,16 @@ def plot_gif(parameter_values,
         pedestrian_size = 0.4
 
     log.info(f"[plot_gif] Skip set to: {skip}")
-    
+
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(1, 1, 1)
 
-    colors = { "ego" : colorConverter.to_rgba('yellow', alpha=0.6),
-            "adversary" : colorConverter.to_rgba('red', alpha=0.2),
-               "vehicles": colorConverter.to_rgba('green', alpha=0.6),
-               "pedestrians": colorConverter.to_rgba('purple', alpha=0.2),
-               "traces": colorConverter.to_rgba('green', alpha=0.3),
-               "road" : colorConverter.to_rgba('grey', alpha=0.2),}
-
+    colors = {"ego": colorConverter.to_rgba('yellow', alpha=0.6),
+              "adversary": colorConverter.to_rgba('red', alpha=0.2),
+              "vehicles": colorConverter.to_rgba('green', alpha=0.6),
+              "pedestrians": colorConverter.to_rgba('purple', alpha=0.2),
+              "traces": colorConverter.to_rgba('green', alpha=0.3),
+              "road": colorConverter.to_rgba('grey', alpha=0.2), }
 
     ''' actors =
         { 
@@ -65,22 +65,28 @@ def plot_gif(parameter_values,
     vehicles_names = actors["vehicles"]
     pedestrians_names = actors["pedestrians"]
     actors_names = [ego_name] + \
-                    ([adversary_name] if adversary_name is not None else []) + \
-                    vehicles_names + \
-                    pedestrians_names
+        ([adversary_name] if adversary_name is not None else []) + \
+        vehicles_names + \
+        pedestrians_names
 
     "Traces and yaws for actors"
-    trace_ego = np.array(simout.location[ego_name])  # time series of Ego position
+    # time series of Ego position
+    trace_ego = np.array(simout.location[ego_name])
     yaw_ego = np.array(simout.yaw[ego_name])  # time series of Ego yaw
 
     if adversary_name is not None:
-        trace_adversary = np.array(simout.location[adversary_name])  # time series of adversary position
-        yaw_adversary = np.array(simout.yaw[adversary_name])  # time series of adversary yaw
+        # time series of adversary position
+        trace_adversary = np.array(simout.location[adversary_name])
+        # time series of adversary yaw
+        yaw_adversary = np.array(simout.yaw[adversary_name])
 
-    traces_vehicles = [np.array(simout.location[vehicle_name]) for vehicle_name in vehicles_names]
-    yaws_vehicles = [np.array(simout.yaw[vehicle_name]) for vehicle_name in vehicles_names]
+    traces_vehicles = [np.array(simout.location[vehicle_name])
+                       for vehicle_name in vehicles_names]
+    yaws_vehicles = [np.array(simout.yaw[vehicle_name])
+                     for vehicle_name in vehicles_names]
 
-    traces_pedestrians = [np.array(simout.location[pedestrian_name]) for pedestrian_name in pedestrians_names]
+    traces_pedestrians = [np.array(simout.location[pedestrian_name])
+                          for pedestrian_name in pedestrians_names]
 
     "Cartesian coordinates for actors"
     x_ego = trace_ego[:, 0]
@@ -93,12 +99,15 @@ def plot_gif(parameter_values,
     x_vehicles = [traces_vehicles[i][:, 0] for i in range(len(vehicles_names))]
     y_vehicles = [traces_vehicles[i][:, 1] for i in range(len(vehicles_names))]
 
-    x_pedestrians = [traces_pedestrians[i][:, 0] for i in range(len(pedestrians_names))]
-    y_pedestrians = [traces_pedestrians[i][:, 1] for i in range(len(pedestrians_names))]
+    x_pedestrians = [traces_pedestrians[i][:, 0]
+                     for i in range(len(pedestrians_names))]
+    y_pedestrians = [traces_pedestrians[i][:, 1]
+                     for i in range(len(pedestrians_names))]
 
     "Lables and titles"
     label_parameters = str(["{:.3f}".format(v) for v in parameter_values])
-    plt.title(f"{simout.otherParams.get('simulator','Simulation')}\n Scenario {label_parameters}")
+    plt.title(
+        f"{simout.otherParams.get('simulator','Simulation')}\n Scenario {label_parameters}")
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
 
@@ -107,8 +116,8 @@ def plot_gif(parameter_values,
     borders_y = []
     for actor_name in actors_names:
         trace_actor = np.array(simout.location[actor_name])
-        x_actor = trace_actor[:,0]
-        y_actor = trace_actor[:,1]
+        x_actor = trace_actor[:, 0]
+        y_actor = trace_actor[:, 1]
         borders_x.extend([min(x_actor), max(x_actor)])
         borders_y.extend([min(y_actor), max(y_actor)])
 
@@ -120,7 +129,8 @@ def plot_gif(parameter_values,
     right_border_y = max(borders_y)
     center_y = (left_border_y + right_border_y) / 2
 
-    maximum_size_of_axis = max((right_border_y - left_border_y), (right_border_x - left_border_x))
+    maximum_size_of_axis = max(
+        (right_border_y - left_border_y), (right_border_x - left_border_x))
 
     ax.set(xlim=(center_x - maximum_size_of_axis * 0.55, center_x + maximum_size_of_axis * 0.55),
            ylim=(center_y - maximum_size_of_axis * 0.55, center_y + maximum_size_of_axis * 0.55))
@@ -128,11 +138,12 @@ def plot_gif(parameter_values,
     "Plot road"
     if "road" in simout.otherParams:
         road = simout.otherParams["road"]
-        plot_road(road, 
-                color=colors["road"])
+        plot_road(road,
+                  color=colors["road"])
 
     "Rectangle objects for ego and vehicles"
-    patch_ego = Rectangle((0, 0), width=car_width, height=car_length, color=colors["ego"])
+    patch_ego = Rectangle((0, 0), width=car_width,
+                          height=car_length, color=colors["ego"])
     patch_ego.set_width(car_width)
     patch_ego.set_height(car_length)
 
@@ -143,7 +154,6 @@ def plot_gif(parameter_values,
         patch_vehicle.set_height(car_length)
         # TODO: introduce separate dimensions of vehicles
 
-
     "Cicle object or patch object for adversary"
 
     circle_adversary = None
@@ -151,16 +161,18 @@ def plot_gif(parameter_values,
 
     if adversary_name is not None:
         if simout.type[adversary_name] == "pedestrian":
-            circle_adversary = Circle((0, 0), radius=pedestrian_size, color=colors["adversary"])
+            circle_adversary = Circle(
+                (0, 0), radius=pedestrian_size, color=colors["adversary"])
 
         if simout.type[adversary_name] == "vehicle":
-            patch_adversary = Rectangle((0, 0), width=car_width, height=car_length, color=colors["ego"])
+            patch_adversary = Rectangle(
+                (0, 0), width=car_width, height=car_length, color=colors["ego"])
             patch_adversary.set_width(car_width)
             patch_adversary.set_height(car_length)
 
     "Cicle objects for pedestrians"
-    circles_pedestrians = [Circle((0, 0), radius=pedestrian_size, color=colors["pedestrians"]) for _ in range(len(pedestrians_names))]
-
+    circles_pedestrians = [Circle((0, 0), radius=pedestrian_size,
+                                  color=colors["pedestrians"]) for _ in range(len(pedestrians_names))]
 
     "Plot traces of all objects"
     plt.plot(x_ego, y_ego, color=colors["traces"])
@@ -183,22 +195,27 @@ def plot_gif(parameter_values,
     def update(i):
         # updating ego
         rotation_angle_ego = (yaw_ego[0::skip][i] - 90) % 360
-        set_angle_incompatible(patch_ego,rotation_angle_ego)
-        shift_angle_ego = rotation_angle_ego - 180 / np.pi * np.arctan(car_width / car_length)
-        shift_x_ego = 0.5 * np.sqrt(car_width ** 2 + car_length ** 2) * np.sin(shift_angle_ego * np.pi / 180)
-        shift_y_ego = 0.5 * np.sqrt(car_width ** 2 + car_length ** 2) * np.cos(shift_angle_ego * np.pi / 180)
-        patch_ego.set_xy([x_ego[0::skip][i] + shift_x_ego, y_ego[0::skip][i] - shift_y_ego])
+        set_angle_incompatible(patch_ego, rotation_angle_ego)
+        shift_angle_ego = rotation_angle_ego - 180 / \
+            np.pi * np.arctan(car_width / car_length)
+        shift_x_ego = 0.5 * \
+            np.sqrt(car_width ** 2 + car_length ** 2) * \
+            np.sin(shift_angle_ego * np.pi / 180)
+        shift_y_ego = 0.5 * \
+            np.sqrt(car_width ** 2 + car_length ** 2) * \
+            np.cos(shift_angle_ego * np.pi / 180)
+        patch_ego.set_xy([x_ego[0::skip][i] + shift_x_ego,
+                         y_ego[0::skip][i] - shift_y_ego])
         ax.add_patch(patch_ego)
-        
+
         for annotation in annotations:
             annotation.remove()
         annotations.clear()
 
-        annotations.append(ax.annotate(f'Frame {i}', xy=(x_ego[0::skip][i] + shift_x_ego, y_ego[0::skip][i] - shift_y_ego), 
-                    xytext=(0, -20),
-                    textcoords='offset points', ha='center', va='top',
-                    fontsize=12, color='black'))
-
+        annotations.append(ax.annotate(f'Frame {i}', xy=(x_ego[0::skip][i] + shift_x_ego, y_ego[0::skip][i] - shift_y_ego),
+                                       xytext=(0, -20),
+                                       textcoords='offset points', ha='center', va='top',
+                                       fontsize=12, color='black'))
 
         # updating adversary (if pedestrian)
         if circle_adversary is not None:
@@ -208,13 +225,15 @@ def plot_gif(parameter_values,
         # updating adversary (if vehicle)
         if patch_adversary is not None:
             rotation_angle_adversary = (yaw_adversary[0::skip][i] - 90) % 360
-            set_angle_incompatible(patch_adversary,rotation_angle_adversary)
-            shift_angle_adversary = rotation_angle_adversary - 180 / np.pi * np.arctan(car_width / car_length)
+            set_angle_incompatible(patch_adversary, rotation_angle_adversary)
+            shift_angle_adversary = rotation_angle_adversary - \
+                180 / np.pi * np.arctan(car_width / car_length)
             shift_x_adversary = 0.5 * np.sqrt(car_width ** 2 + car_length ** 2) * np.sin(
                 shift_angle_adversary * np.pi / 180)
             shift_y_adversary = 0.5 * np.sqrt(car_width ** 2 + car_length ** 2) * np.cos(
                 shift_angle_adversary * np.pi / 180)
-            patch_adversary.set_xy([x_adversary[0::skip][i] + shift_x_adversary, y_adversary[0::skip][i] - shift_y_adversary])
+            patch_adversary.set_xy(
+                [x_adversary[0::skip][i] + shift_x_adversary, y_adversary[0::skip][i] - shift_y_adversary])
             ax.add_patch(patch_adversary)
 
         # updating pedestrians
@@ -235,12 +254,14 @@ def plot_gif(parameter_values,
             rotation_angle_vehicle = (yaw_vehicle[0::skip][i] - 90) % 360
             set_angle_incompatible(patch_vehicle, rotation_angle_vehicle)
 
-            shift_angle_vehicle = rotation_angle_vehicle - 180 / np.pi * np.arctan(car_width / car_length)
+            shift_angle_vehicle = rotation_angle_vehicle - \
+                180 / np.pi * np.arctan(car_width / car_length)
             shift_x_vehicle = 0.5 * np.sqrt(car_width ** 2 + car_length ** 2) * np.sin(
                 shift_angle_vehicle * np.pi / 180)
             shift_y_vehicle = 0.5 * np.sqrt(car_width ** 2 + car_length ** 2) * np.cos(
                 shift_angle_vehicle * np.pi / 180)
-            patch_vehicle.set_xy([x_vehicle[0::skip][i] + shift_x_vehicle, y_vehicle[0::skip][i] - shift_y_vehicle])
+            patch_vehicle.set_xy(
+                [x_vehicle[0::skip][i] + shift_x_vehicle, y_vehicle[0::skip][i] - shift_y_vehicle])
             ax.add_patch(patch_vehicle)
         return
 
@@ -254,41 +275,43 @@ def plot_gif(parameter_values,
 
     plt.clf()
     plt.close(fig)
-    
+
     return
 
 
 def plot_road(road, color="#808080"):
     # plot centerline
-    points=[(p[0],p[1]) for p in road ]
+    points = [(p[0], p[1]) for p in road]
     width = road[0][3]
     # print(f"plotting road: {points}")
-    plt.plot([p[0] for p in points], 
-             [p[1] for p in points], 
-             linewidth=5, 
+    plt.plot([p[0] for p in points],
+             [p[1] for p in points],
+             linewidth=5,
              c=color)
 
     # plot lanes, border
     from lanekeeping.self_driving.utils.visualization import RoadTestVisualizer
-    
-    road_test_visualizer = RoadTestVisualizer(map_size=config.MAP_SIZE)
-    road_test_visualizer.visualize_road_basic(road_points=points, 
-                                    width=width - 1,
-                                    do_save=False,
-                                    car_trajectory=list())
 
-    # print("Road plotted.") 
+    road_test_visualizer = RoadTestVisualizer(map_size=config.MAP_SIZE)
+    road_test_visualizer.visualize_road_basic(road_points=points,
+                                              width=width - 1,
+                                              do_save=False,
+                                              car_trajectory=list())
+
+    # print("Road plotted.")
 
 # cath matplotlib incompat with new api call
-def set_angle_incompatible(patch,angle):
+
+
+def set_angle_incompatible(patch, angle):
     try:
         patch.set_angle(angle)
     except Exception as e:
-        #print(e)
-        if isinstance(patch,Rectangle):
-            #print(type(patch))
-            return Rectangle(patch.get_xy(), 
-                             width=patch.get_width(), 
-                             height=patch.get_height(), 
-                             color=patch.get_facecolor(), 
+        # print(e)
+        if isinstance(patch, Rectangle):
+            # print(type(patch))
+            return Rectangle(patch.get_xy(),
+                             width=patch.get_width(),
+                             height=patch.get_height(),
+                             color=patch.get_facecolor(),
                              angle=angle)

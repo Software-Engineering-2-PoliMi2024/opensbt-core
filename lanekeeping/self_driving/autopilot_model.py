@@ -31,7 +31,8 @@ class AutopilotModel:
         Modified NVIDIA model
         """
         model = Sequential()
-        model.add(Lambda(lambda x: x / 127.5 - 1.0, input_shape=self.input_shape))
+        model.add(Lambda(lambda x: x / 127.5 - 1.0,
+                  input_shape=self.input_shape))
         model.add(Conv2D(24, (5, 5), activation="elu", strides=(2, 2)))
         model.add(Conv2D(36, (5, 5), activation="elu", strides=(2, 2)))
         model.add(Conv2D(48, (5, 5), activation="elu", strides=(2, 2)))
@@ -53,7 +54,8 @@ class AutopilotModel:
         return model
 
     def load(self, model_path: str) -> None:
-        assert os.path.exists(model_path), "Model path {} not found".format(model_path)
+        assert os.path.exists(
+            model_path), "Model path {} not found".format(model_path)
         # with tf.device("cpu:0"):
         with tf.device("GPU:0"):
             self.model = load_model(filepath=model_path)
@@ -78,7 +80,8 @@ class AutopilotModel:
     ) -> None:
         os.makedirs(save_path, exist_ok=True)
         self.model = self.build_model(keep_probability=keep_probability)
-        filename = "{}-{}-{}.h5".format(self.env_name, model_name, datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
+        filename = "{}-{}-{}.h5".format(self.env_name, model_name,
+                                        datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
         if fake_images:
             filename = "{}-fake-{}-{}.h5".format(
                 self.env_name, model_name, datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -88,9 +91,11 @@ class AutopilotModel:
             os.path.join(save_path, filename), monitor="val_loss", verbose=0, save_best_only=save_best_only, mode="auto"
         )
 
-        self.model.compile(loss="mean_squared_error", optimizer=Adam(lr=learning_rate))
+        self.model.compile(loss="mean_squared_error",
+                           optimizer=Adam(lr=learning_rate))
 
-        early_stopping = EarlyStopping(monitor="val_loss", patience=early_stopping_patience)
+        early_stopping = EarlyStopping(
+            monitor="val_loss", patience=early_stopping_patience)
 
         train_generator = DataGenerator(
             X=X_train,
@@ -138,7 +143,8 @@ class AutopilotModel:
 
             plt.savefig(
                 os.path.join(
-                    save_path, "{}-loss-{}.pdf".format(self.env_name, datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
+                    save_path, "{}-loss-{}.pdf".format(
+                        self.env_name, datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
                 ),
                 format="pdf",
             )

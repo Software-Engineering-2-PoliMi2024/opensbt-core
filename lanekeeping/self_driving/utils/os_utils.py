@@ -25,4 +25,5 @@ def kill_beamng_simulator() -> None:
         output_str = ret.decode("utf-8")
         logg.info(output_str)
     else:
-        logg.warn("The program {} is not in the list of currently running programs".format(beamng_program_name))
+        logg.warn("The program {} is not in the list of currently running programs".format(
+            beamng_program_name))

@@ -2,6 +2,9 @@
 # "Model-based exploration of the frontier of behaviours for deep learning system testing"
 # by V. Riccio and P. Tonella
 # https://doi.org/10.1145/3368089.3409730
+from lanekeeping.self_driving.utils.visualization import RoadTestVisualizer
+from lanekeeping import config
+from lanekeeping.self_driving import road_utils
 import time
 from typing import List, Tuple, Union
 from shapely.geometry import Point
@@ -20,11 +23,6 @@ import warnings
 
 warnings.simplefilter("ignore", ShapelyDeprecationWarning)
 
-from lanekeeping.self_driving import road_utils
-from lanekeeping import config
-
-from lanekeeping.self_driving.utils.visualization import RoadTestVisualizer
-
 
 class CustomRoadGenerator(RoadGenerator):
     """Generate random roads given the configuration parameters."""
@@ -41,7 +39,7 @@ class CustomRoadGenerator(RoadGenerator):
         num_spline_nodes=20,
         initial_node=(0.0, 0.0, 0.0, config.ROAD_WIDTH),
         bbox_size=(0, 0, 250, 250),
-        max_angles = None
+        max_angles=None
     ):
         assert num_control_nodes > 1 and num_spline_nodes > 0
         assert 0 <= max_angle <= 360
@@ -64,7 +62,8 @@ class CustomRoadGenerator(RoadGenerator):
             self.max_angles = max_angles
 
     def set_max_angle(self, max_angle: int) -> None:
-        assert max_angle > 0, "Max angle must be > 0. Found: {}".format(max_angle)
+        assert max_angle > 0, "Max angle must be > 0. Found: {}".format(
+            max_angle)
         self.max_angle = max_angle
 
     def generate_control_nodes(
@@ -143,15 +142,17 @@ class CustomRoadGenerator(RoadGenerator):
         control_nodes = control_nodes[0:]
         sample_nodes = catmull_rom(control_nodes, self.num_spline_nodes)
 
-        road_points = [Point(node[0], node[1], node[2]) for node in sample_nodes]
-        control_points = [Point(node[0], node[1], node[2]) for node in control_nodes]
+        road_points = [Point(node[0], node[1], node[2])
+                       for node in sample_nodes]
+        control_points = [Point(node[0], node[1], node[2])
+                          for node in control_nodes]
         _, _, _, width = self.initial_node
 
-        self.previous_road = road_utils.get_road(road_width=width, 
-                                                 road_points=road_points, 
-                                                 control_points=control_points, 
+        self.previous_road = road_utils.get_road(road_width=width,
+                                                 road_points=road_points,
+                                                 control_points=control_points,
                                                  simulator_name=kwargs["simulator_name"])
-        
+
         # print(f"[CustomRoadGenerator] generated road: {self.previous_road.get_string_repr()}")
         return self.previous_road
 
@@ -203,22 +204,21 @@ class CustomRoadGenerator(RoadGenerator):
             return self.max_angles[i]
 
 
-
 if __name__ == "__main__":
 
     map_size = 250
 
     # set_random_seed(seed=0)
 
-    angle_complex = [81.347638,88.279769,0.997705,85.822416]
-    angle_easy = [42.188653,11.720887,28.704612,55.379076]
-    angle_custom1 = [0,90,0,0]
-    angle_custom2 = [0,90,0,90]
-    angle_custom3 = [0,0,0,0]
+    angle_complex = [81.347638, 88.279769, 0.997705, 85.822416]
+    angle_easy = [42.188653, 11.720887, 28.704612, 55.379076]
+    angle_custom1 = [0, 90, 0, 0]
+    angle_custom2 = [0, 90, 0, 90]
+    angle_custom3 = [0, 0, 0, 0]
 
     angles_roads = [
-        angle_complex, 
-        angle_easy, 
+        angle_complex,
+        angle_easy,
         angle_custom1,
         angle_custom2,
         angle_custom3]
@@ -226,17 +226,17 @@ if __name__ == "__main__":
     # angles = [60,-10,0,90]
     for angles in angles_roads:
         seg_lengths = [40 for _ in angles]
-    
+
         gen = CustomRoadGenerator(map_size=250,
-                                            num_control_nodes=len(angles),
-                                            seg_length=config.SEG_LENGTH,
-                                            max_angle=config.MAX_ANGLE)
+                                  num_control_nodes=len(angles),
+                                  seg_length=config.SEG_LENGTH,
+                                  max_angle=config.MAX_ANGLE)
 
         start_time = time.perf_counter()
 
         road = gen.generate(simulator_name=config.UDACITY_SIM_NAME,
-                            angles = angles,
-                            starting_pos=(0,0,0,0),
+                            angles=angles,
+                            starting_pos=(0, 0, 0, 0),
                             seg_lengths=seg_lengths)
 
         concrete_representation = road.get_concrete_representation()
@@ -246,5 +246,5 @@ if __name__ == "__main__":
         print(f"num turns: {road.compute_num_turns()}")
 
         road_test_visualizer = RoadTestVisualizer(map_size=map_size)
-        road_test_visualizer.visualize_road_test(road=road, plot_control_points=True, folder_path="./road_generator/", filename=f"road_custom_{str(angles)}")
-    
+        road_test_visualizer.visualize_road_test(
+            road=road, plot_control_points=True, folder_path="./road_generator/", filename=f"road_custom_{str(angles)}")

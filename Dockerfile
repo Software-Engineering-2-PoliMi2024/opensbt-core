@@ -13,6 +13,6 @@ COPY ./Simulator /open-bst/lanekeeping/Simulator
 #Copy th drving model
 COPY ./SelfDrivingModels /open-bst/lanekeeping/SelfDrivingModels
 
-COPY ./ /open-bst
+# COPY ./ /open-bst
 
-CMD ["python", "-m", "lanekeeping.udacity.run_udacity_MINE"]
+# CMD ["python", "-m", "lanekeeping.udacity.run_udacity_MINE"]
