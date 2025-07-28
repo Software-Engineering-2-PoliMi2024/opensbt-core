@@ -49,7 +49,7 @@ class CustomRoadGenerator(RoadGenerator):
             max_angle (int, optional): `❗CURRENTLY NOT USED❗` Maximum angle for the road segments. Defaults to 90.
             seg_length (int, optional): Default length of the road segments, used when no segment lengths are provided in the `generate` method. Defaults to 25.
             num_spline_nodes (int, optional): Number of spline nodes for the road. Defaults to 20.
-            initial_node (tuple, optional): Initial node for the road. Defaults to (0.0, 0.0, 0.0, config.ROAD_WIDTH).
+            initial_node (tuple, optional): Initial node for the road in the format (x, y, z, width). Defaults to (0.0, 0.0, 0.0, config.ROAD_WIDTH). `❗The width set here is used as the width of the road❗`
             bbox_size (tuple, optional): Bounding box size for the road. Defaults to (0, 0, 250, 250).
             max_angles (list, optional): `❗CURRENTLY NOT USED❗` List of maximum angles for each control node. Defaults to None.
         """
