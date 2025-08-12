@@ -6,6 +6,10 @@
 # paologinefra/se2rp = the Docker image to use
 # bash = command to run in the container
 
+./sudoCheck.sh
+
+# xhost +local:docker # grant docker permission to X server
+
 docker run \
     --rm \
     -it -e DISPLAY=$DISPLAY \

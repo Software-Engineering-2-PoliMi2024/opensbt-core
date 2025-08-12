@@ -52,7 +52,7 @@ docs/build/**
 Simulator/
 
 #Model
-SelfDrivingModels/*
+SelfDrivingModels/
 SelfDrivingModels/keep.txt
 
 unitylog.txt
