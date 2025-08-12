@@ -9,7 +9,7 @@ while [[ "$#" -gt 0 ]]; do
       ;;
     -h|--help)
       echo "Usage: $0 [--headless] [-h|--help]"
-      echo "  --headless   Run the script with xvfb-run"
+      echo "  --headless   Run the script with xvfb-run (without GUI)"
       echo "  -h, --help   Show this help message"
       exit 0
       ;;
