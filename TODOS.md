@@ -1,7 +1,7 @@
 # Todos
 
 - Graceful Error handling in the simulation - CAP
-- Move Docker stuff in a folder - PAOLO
+- ✅ Move Docker stuff in a folder - PAOLO
 - Document current state of things - CAP
 - Logger - CAP
 - Data analysis - PAOLO
