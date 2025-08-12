@@ -1,10 +1,11 @@
 # Todos
 
-- Graceful Error handling in the simulation
-- Move Docker stuff in a folder
-- Document current state of things
-- Logger
-- Data analysis
-- .env for Mongo DB
+- Graceful Error handling in the simulation - CAP
+- Move Docker stuff in a folder - PAOLO
+- Document current state of things - CAP
+- Logger - CAP
+- Data analysis - PAOLO
+- .env for Mongo DB - CAP
+- Multi run in Json - CAP
 - Service structure
 - Parallelization (multi threading the simulator)
