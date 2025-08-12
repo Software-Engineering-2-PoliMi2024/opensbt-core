@@ -6,7 +6,17 @@
 # paologinefra/se2rp = the Docker image to use
 # bash = command to run in the container
 
-./sudoCheck.sh
+# Check if gum is installed and functional
+./Docker/DockerManager/CheckGum.sh
+
+# clear
+
+./Docker/DockerManager/sudoCheck.sh
+
+gum style \
+    --foreground 39 --border-foreground 39 --border double \
+    --align center --width 50 --margin "1 2" --padding "2 4" \
+    'Simulator Docker running'
 
 # xhost +local:docker # grant docker permission to X server
 
