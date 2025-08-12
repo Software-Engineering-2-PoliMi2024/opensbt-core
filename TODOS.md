@@ -7,5 +7,5 @@
 - Data analysis - PAOLO
 - .env for Mongo DB - CAP
 - Multi run in Json - CAP
-- Service structure
-- Parallelization (multi threading the simulator)
+- Service structure - TONI
+- Parallelization (multi threading the simulator) - TONI
