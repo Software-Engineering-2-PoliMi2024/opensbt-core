@@ -135,7 +135,7 @@ class CustomRoadGenerator(RoadGenerator):
             RoadPolygon.from_nodes(control_nodes[1:-1])
         )
 
-    def generate(self, *args, **kwargs) -> str:
+    def generate(self, *args, **kwargs) -> Road:
         """
         Needs a list of integer angles in the kwargs param `angles`.
         Optionally takes another list of segment lengths in `seg_lengths` key of kwargs.

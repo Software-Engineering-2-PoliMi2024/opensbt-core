@@ -28,14 +28,12 @@ class UdacityGymEnv_RoadGen(gym.Env):
     def __init__(
         self,
         seed: int,
-        test_generator: RoadGenerator = None,
         headless: bool = False,
         exe_path: str = None,
     ):
         self.seed = seed
         self.exe_path = exe_path
         self.logger = GlobalLog("UdacityGymEnv_RoadGen")
-        self.test_generator = test_generator
         if headless:
             self.logger.warn("Headless mode not supported with Udacity")
         self.headless = False
@@ -59,7 +57,7 @@ class UdacityGymEnv_RoadGen(gym.Env):
             )  # wait for the simulator to start and the scene to be selected
 
         self.executor = UdacitySimController(
-            port=self.port, test_generator=test_generator
+            port=self.port
         )
 
         print("Road generated")

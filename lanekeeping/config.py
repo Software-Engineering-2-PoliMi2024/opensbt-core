@@ -1,4 +1,5 @@
 import os
+from typing import Tuple
 
 # DNN Model
 DNN_MODEL_PATH = r"./SelfDrivingModels/mixed-chauffeur.h5"
@@ -9,8 +10,8 @@ UDACITY_EXE_PATH = "./Simulator/ubuntu_binaries/ubuntu.x86_64"
 
 ################
 
-IN_WIDTH = 320
-IN_HEIGHT = 160
+IN_WIDTH : int = 320
+IN_HEIGHT : int = 160
 
 ROAD_WIDTH = 8.0  # Used but useless as far as I have tested
 NUM_SAMPLED_POINTS = 100  # Number of points used to build the road
@@ -18,8 +19,8 @@ SEG_LENGTH = 25  # Length of each segment in the road
 
 MAX_EPISODE_STEPS = 2000
 
-IMAGE_CHANNELS = 3
-INPUT_SHAPE = (IN_HEIGHT, IN_WIDTH, IMAGE_CHANNELS)
+IMAGE_CHANNELS : int = 3
+INPUT_SHAPE : Tuple[int]  = (IN_HEIGHT, IN_WIDTH, IMAGE_CHANNELS)
 INPUT_DIM = INPUT_SHAPE
 DISPLACEMENT = 2
 
