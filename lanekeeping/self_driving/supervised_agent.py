@@ -41,6 +41,16 @@ class SupervisedAgent(Agent):
         self.max_speed = max_speed
         self.min_speed = min_speed
 
+    def setSpeedLimits(self, minSpeed:int, maxSpeed:int):
+        """Sets the speed limits for the agent
+
+        Args:
+            minSpeed (int): minimum Speed
+            maxSpeed (int): maximum Speed
+        """
+        self.min_speed = minSpeed
+        self.max_speed = maxSpeed
+
     def predict(self, obs: np.ndarray, state: Dict) -> np.ndarray:
         obs = preprocess(image=obs, env_name=self.env_name,
                          fake_images=self.fake_images)
