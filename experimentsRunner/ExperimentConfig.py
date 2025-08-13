@@ -2,7 +2,9 @@ from lanekeeping.udacity.UdacitySimulatorConfig import UdacitySimulatorConfig
 from .SearchField import SearchField
 from typing import List, Iterator
 from dataclasses import dataclass
+from typing import Union
 import copy
+
 
 @dataclass
 class ExperimentConfig:
@@ -15,15 +17,15 @@ class ExperimentConfig:
 
     def __iter__(self) -> Iterator:
         return self
-    
-    def __next__(self) -> UdacitySimulatorConfig:
+
+    def __next__(self) -> Union[UdacitySimulatorConfig, None]:
         if not self.searchFields:
             raise StopIteration
-        
+
         if self._firstIter:
             self._firstIter = False
-            return copy.deepcopy(self.scenarioConf)            
-        
+            return copy.deepcopy(self.scenarioConf)
+
         for i, field in enumerate(self.searchFields):
             try:
                 next(field)
