@@ -5,6 +5,7 @@
 - Document current state of things - CAP
 - Logger - CAP
 - Data analysis - PAOLO
+- General small improvements - PAOLO
 - .env for Mongo DB - CAP
 - Multi run in Json - CAP
 - Service structure - TONI
