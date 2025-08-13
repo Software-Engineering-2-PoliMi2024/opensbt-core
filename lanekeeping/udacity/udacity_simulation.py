@@ -61,7 +61,7 @@ class UdacitySimulator():
             simulator_config (simConfig): The input simulator configuration
 
         Raises:
-            e: The exception recieved during the simulation
+            e: The exception received during the simulation
 
         Returns:
             SimulationOutput: The output of the simulation
