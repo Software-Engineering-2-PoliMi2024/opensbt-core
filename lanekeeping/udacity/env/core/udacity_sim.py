@@ -64,6 +64,7 @@ track_sent = False
 pos_x = 0.0
 pos_y = 0.0
 pos_z = 0.0
+resetTrack = False
 
 import os
 
@@ -118,6 +119,7 @@ def telemetry(sid, data) -> None:
     global pos_x
     global pos_y
     global pos_z
+    global resetTrack
 
     if data:
         #write_to_logfile("IN: " + str(int(time.time()*1000)))
@@ -139,10 +141,11 @@ def telemetry(sid, data) -> None:
             send_reset()
         elif (
             generated_track_string is not None
-            and deployed_track_string != generated_track_string
+            and (deployed_track_string != generated_track_string or resetTrack)
         ):
             # TODO: add timeout
             send_track(track_string=generated_track_string)
+            resetTrack =False
         else:
             send_control(steering_angle=steering, throttle=throttle)
 
@@ -199,6 +202,7 @@ class UdacitySimController:
         global pos_x
         global pos_y
         global pos_z
+        global resetTrack
 
         last_obs = None
         speed = 0.0
@@ -214,6 +218,7 @@ class UdacitySimController:
         pos_x = 0.0
         pos_y = 0.0
         pos_z = 0.0
+        resetTrack = True
 
         self.is_success = 0
         self.current_track = None

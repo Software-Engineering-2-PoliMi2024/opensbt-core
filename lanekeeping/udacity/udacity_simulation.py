@@ -95,12 +95,8 @@ class UdacitySimulator():
             # Convert it to the string reppresentation
             waypoints : str = road.get_string_repr()
 
-            # set up of params
-            done = False
-
             # Reset the enviroment, this also sets the road configuration
             obs = self.env.reset(skip_generation=False, track_string=waypoints)
-
 
             # This variable will contains the current speed, it is needed by the agent to compute the next action
             speed:float = 0
