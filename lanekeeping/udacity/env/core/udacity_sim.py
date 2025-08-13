@@ -155,12 +155,10 @@ class UdacitySimController:
     def __init__(
         self,
         port: int,
-        test_generator: RoadGenerator = None,
     ):
         self.port = port
         # sensor size - height, width, depth
         self.camera_img_size = INPUT_DIM
-        self.test_generator = test_generator
         self.max_cte_error = MAX_CTE_ERROR
 
         self.is_success = 0

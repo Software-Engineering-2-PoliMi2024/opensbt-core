@@ -32,7 +32,7 @@ from timeit import default_timer as timer
 import logging as log
 from .UdacitySimulatorConfig import UdacitySimulatorConfig as simConfig
 from queue import Queue
-
+from typing import Callable
 class UdacitySimulator():
     def __init__(self) -> None:
         # Initialize the agent
@@ -77,13 +77,9 @@ class UdacitySimulator():
                                              num_control_nodes=len(simulator_config.angles),
                                              seg_length=simulator_config.segLength)
 
-        speed = 0
         try:
-            speeds = []
-            pos = []
-            xte = []
-            steerings = []
-            throttles = []
+            #Instantiate the output accumulator
+            simulationOutput = SimulationOutput()
 
             angles = simulator_config.angles
 
@@ -92,6 +88,9 @@ class UdacitySimulator():
                 starting_pos=simulator_config.initial_position,
                 angles=angles,
                 simulator_name=config.UDACITY_SIM_NAME)
+
+            #Add the road configuration to the output
+            simulationOutput.road = road.get_concrete_representation(to_plot=True)
             
             # Convert it to the string reppresentation
             waypoints : str = road.get_string_repr()
@@ -102,138 +101,139 @@ class UdacitySimulator():
             # Reset the enviroment, this also sets the road configuration
             obs = self.env.reset(skip_generation=False, track_string=waypoints)
 
-            start = timer()
 
-            fps_time_start = time.time()
-            counter = 0
-            counter_all = []
+            # This variable will contains the current speed, it is needed by the agent to compute the next action
+            speed:float = 0
 
-            while not done:
-                # calculate fps
-                if time.time() - fps_time_start > 1:
-                    # reset
-                    log.info(f"Frames in 1s: {counter}")
-                    log.info(
-                        f"Time passed: {time.time() - fps_time_start}")
+            # This is the content of the main simulation loop
+            def loopingFunction():
+                #Variables coming from outside this function
+                nonlocal obs, speed, simulationOutput
 
-                    counter_all.append(counter)
-                    counter = 0
-                    fps_time_start = time.time()
-                else:
-                    counter += 1
-                # time.sleep(0.15)
+                # Infer next actions
                 actions = self.agent.predict(obs=obs,
-                                        state=dict(speed=speed,
-                                                    simulator_name=config.UDACITY_SIM_NAME)
+                                        state=dict(
+                                            speed=speed,
+                                            simulator_name=config.UDACITY_SIM_NAME
+                                            )
                                         )
-                # # clip action to avoid out of bound errors
+                
+                # Clip action to avoid out of bound errors
                 if isinstance(self.env.action_space, gym.spaces.Box):
                     actions = np.clip(
                         actions,
                         self.env.action_space.low,
                         self.env.action_space.high
                     )
-                # obs is the image, info contains the road and the position of the car
+
+                # Perform the actions and get the new obs is the image, info contains the road and the position of the car
                 obs, done, info = self.env.step(actions)
 
-                speed = 0.0 if info.get(
-                    "speed", None) is None else info.get("speed")
+                # Update the current speed
+                speed_candidate = info.get("speed", None)
+                speed = 0.0 if speed_candidate is None else speed_candidate
 
-                speeds.append(info["speed"])
-                pos.append(info["pos"])
+                # Compute and cap (if necessary) the xte
+                xte = info['cte']
+                xte_sign = 1 if xte == 0 else xte / abs(xte)
+                xte = abs(xte)
+                if xte > config.MAX_XTE and config.CAP_XTE:
+                    xte = config.MAX_XTE
+                xte *= xte_sign
 
-                if config.CAP_XTE:
-                    xte.append(info["cte"]
-                                if abs(info["cte"]) <= config.MAX_XTE
-                                else config.MAX_XTE)
+                # Add the stats of this iteration to the output
+                simulationOutput.addStats(
+                    position = info['pos'],
+                    speed=speed,
+                    xte=xte,
+                    steering=actions[0][0],
+                    throttle=actions[0][1]
+                )
 
-                    assert np.all(abs(np.asarray(
-                        xte)) <= config.MAX_XTE), f"At least one element is not smaller than {config.MAX_XTE}"
-                else:
-                    xte.append(info["cte"])
-                steerings.append(actions[0][0])
-                throttles.append(actions[0][1])
+                #Check loop end conditions
+                self.checkEndConditions(
+                    simulatorConfig=simulator_config,
+                    xte = info["cte"],
+                    envDone=done
+                    )
 
-                end = timer()
-                time_elapsed = int(end - start)
-                if time_elapsed % 2 == 0:
-                    pass  # print(f"time_elapsed: {time_elapsed}")
-                elif time_elapsed > simulator_config.maxTime:
-                    # print(f"Over time limit, terminating.")
-                    done = True
-                elif abs(info["cte"]) > simulator_config.maxXTE:
-                    # print("Is above MAXIMAL_XTE. Terminating.")
-                    done = True
-                else:
-                    pass
-
-            fps_rate = np.sum(counter_all)/time_elapsed
-            log.info(f"FPS rate: {fps_rate}")
-
-            # morph values into SimulationOutput Object
-            result = SimulationOutput(
-                simTime=time_elapsed,
-                times=[x for x in range(len(speeds))],
-                location={
-                    "ego": [(x[0], x[1]) for x in pos],  # cut out z value
-                },
-                velocity={
-                    "ego": UdacitySimulator._calculate_velocities(pos, speeds),
-                },
-                speed={
-                    "ego": speeds,
-                },
-                acceleration={"ego": UdacitySimulator.calc_acceleration(
-                    speeds=speeds, fps=20)},
-                yaw={
-                    "ego": calc_yaw_ego(pos)
-                },
-                collisions=[],
-                actors={
-                    "ego": "ego",
-                    "pedestrians": [],
-                    "vehicles": ["ego"]
-                },
-                otherParams={"xte": xte,
-                                "simulator": "Udacity",
-                                "road": road.get_concrete_representation(to_plot=True),
-                                "steerings": steerings,
-                                "throttles": throttles,
-                                "fps_rate": fps_rate}
+            # Execute the main loop
+            elapsedTime, iterations = self.timedConditionalLoop(
+                loopingFunction=loopingFunction
             )
 
-        except Exception as e:
-            # print(f"Received exception during simulation {e}")
+            #Add the timing stats to the output
+            simulationOutput.elapsedTime = elapsedTime
+            simulationOutput.iterations = iterations
 
+        except Exception as e:
             raise e
 
-        return result
+        return simulationOutput
     
     def killSimulation(self):
         """
-        This method closes the simulator
+        This method permanently closes the simulator
         """
         self.env.close()
         kill_udacity_simulator()
 
-    @staticmethod
-    def _calculate_velocities(positions, speeds) -> Tuple[float, float, float]:
+    def endSimulation(self):
         """
-        Calculate velocities given a list of positions and corresponding speeds.
+        This method stops the simulation loop.
+        When this is called the current loop iteration becomes the last one.
+        After that the simulation outputs are computed and returned
         """
-        velocities = []
-        for i in range(len(positions) - 1):
-            displacement = np.array(positions[i + 1]) - np.array(positions[i])
-            direction = displacement / np.linalg.norm(displacement)
-            velocity = direction * speeds[i]
-            velocities.append(velocity)
+        self.done = True
 
-        return velocities
+    def timedConditionalLoop(self, loopingFunction : Callable) -> Tuple[float, int]:
+        """A method to run and time a conditional loop. The loop keeps calling the loopingFunction
+        until the self.endSimulation method is called.
 
-    @staticmethod
-    def calc_acceleration(speeds: List, fps: int):
-        acc = [0]
-        for i in range(1, len(speeds)):
-            a = (speeds[i] - speeds[i-1])*fps / 3.6  # convert to m/s
-            acc.append(a)
-        return acc
+        Args:
+            loopingFunction (Callable): the function to be called inside the loop
+
+        Returns:
+            Tuple[float, int]: Returns the elapsed time in seconds and the number of executed iterations
+        """
+        self.done = False
+        self.loopStartTime = time.time()
+        iterations = 0
+
+        while not self.done:
+            loopingFunction()
+            iterations += 1
+        
+        elapsedTime = self.getElapsedTime()
+        return elapsedTime, iterations
+
+    def getElapsedTime(self) -> float:
+        """Computes  and returns the elapsed time in seconds since the beginning of the main loop
+
+        Returns:
+            float: the elapsed time in seconds since the beginning of the main loop
+        """
+
+        return time.time() - self.loopStartTime
+
+
+    def checkEndConditions(self, simulatorConfig: simConfig, xte: float, envDone:bool) -> None:
+        """This method checks if the end conditions for the simulation are met.
+        If that's the case it stops the simulation using self.endSimulation()
+
+        Args:
+            simulatorConfig (simConfig): The current config of the simulation
+            xte (float): The current xte
+            envDone(bool): The done signal coming for the gym env
+        """
+        # Exceeded maximum time
+        simShouldEnd = self.getElapsedTime() > simulatorConfig.maxTime
+
+        # Exceeded maximum error
+        simShouldEnd = simShouldEnd or abs(xte) > simulatorConfig.maxXTE
+
+        #Env Done
+        simShouldEnd = simShouldEnd or envDone
+
+        if simShouldEnd:
+            self.endSimulation()
