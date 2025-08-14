@@ -49,11 +49,11 @@ docs/_build/**
 docs/build/**
 
 #Simulator
-Simulator/
+Simulator/Simulator/
 
 #Model
-SelfDrivingModels/
-SelfDrivingModels/keep.txt
+Simulator/SelfDrivingModels/
+Simulator/SelfDrivingModels/keep.txt
 
 unitylog.txt
 
