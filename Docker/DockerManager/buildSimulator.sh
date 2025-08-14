@@ -1,0 +1,1 @@
+docker build -f ./Simulator/Dockerfile -t paologinefra/se2rp-simulator .
