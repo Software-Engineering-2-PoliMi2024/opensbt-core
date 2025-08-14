@@ -1,7 +1,7 @@
 # imports related to OpenSBT
 # try:
 import time
-from opensbt.simulation.simulator import SimulationOutput
+from .SimulationOutput import SimulationOutput
 from .os_utils import kill_udacity_simulator
 
 # except ImportError as e:
@@ -11,7 +11,6 @@ from .os_utils import kill_udacity_simulator
 
 # all other imports
 try:
-    from distutils import config
     from typing import List, Tuple
     import numpy as np
     import gym
@@ -27,10 +26,7 @@ from ..self_driving.road import Road
 from ..config import UDACITY_SIM_NAME, DNN_MODEL_PATH, INPUT_SHAPE, UDACITY_EXE_PATH, MAX_XTE, CAP_XTE
 
 from ..self_driving.supervised_agent import SupervisedAgent
-from timeit import default_timer as timer
-import logging as log
 from .UdacitySimulatorConfig import UdacitySimulatorConfig as simConfig
-from queue import Queue
 from typing import Callable
 class UdacitySimulator():
     def __init__(self) -> None:
