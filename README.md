@@ -1,10 +1,14 @@
 # Useful stuff to know
 
-By building and running the docker it will launch a shell in the container with all the dependencies installed.
-The current directory is mounted in the container at `./se2rpCODEBASE`, so you can edit files and run them directly.
+# Simulator service
+The simulator is now available as a service. To run it you just need to do:
+```bash
+docker compose up
+```
 
-To get a reference on how to run a simulation, you can run the `runExperiment.py` script.
+This will launch the simulation server exposing the necessary APIs @ http://0.0.0.0:8000
 
-# Docker
+To see the OpenApi documentation you can go to [/docs](http://127.0.0.1:8000/docs)
 
-To build and/or run the Docker container, you can use the `DockerManager.sh` script.
+You can enqueue a simulation by posting the simulation to `/simulate`. This will return a jobId. You can then check the status/result of the simulation with a get request to `/simulate/{job_id}`
+
