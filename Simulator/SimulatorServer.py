@@ -25,6 +25,8 @@ def simulationThread():
         jobId, config = jobQueue.get(block=True)
 
         try:
+            results[jobId] = {'status' : 'simulating'}
+
             # Performs the simulation
             simOutput: SimulationOutput = simulator.simulate(
                 simulator_config=config)
