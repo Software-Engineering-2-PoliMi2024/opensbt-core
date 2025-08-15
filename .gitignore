@@ -58,3 +58,4 @@ Simulator/SelfDrivingModels/keep.txt
 unitylog.txt
 
 *.env
+**/.conda
