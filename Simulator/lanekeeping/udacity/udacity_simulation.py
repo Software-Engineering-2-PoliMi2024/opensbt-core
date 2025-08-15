@@ -153,12 +153,16 @@ class UdacitySimulator():
                 loopingFunction=loopingFunction
             )
 
+            # Reset the environment
+            self.env.reset(skip_generation=False, track_string=waypoints)
+
             #Add the timing stats to the output
             simulationOutput.elapsedTime = elapsedTime
             simulationOutput.iterations = iterations
 
         except Exception as e:
             raise e
+    
 
         return simulationOutput
     
