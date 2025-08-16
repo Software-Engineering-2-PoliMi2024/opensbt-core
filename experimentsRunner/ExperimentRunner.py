@@ -4,25 +4,26 @@ from dataclasses import asdict
 from dbInteract import DBinteract
 import time
 from typing import Tuple, Callable, Dict
+from .ExperimentLogger import ExperimentLogger 
+from dbInteract import NoDB
+import textwrap
 
 class ExperimentRunner:
-    def __init__(self, config: ExperimentConfig, db: DBinteract=None, log=False):
+    def __init__(self, config: ExperimentConfig, db: DBinteract=NoDB, logger: ExperimentLogger=ExperimentLogger()):
         self.config = config
         self.db = db
-        self.log = log
-        self.persist = db is not None
+        self.logger = logger
         self.expId = None
 
     def run(self) -> Tuple[str, float]:
-        if self.log:
-            print(f"\033[42mrunning experiment for scenario:\n{self.config.scenarioConf}\033[0m")
-        if self.persist:
 
-            if not self.db.connect():
-                raise ConnectionError("Unable to connect to dataBase")
+        if not self.db.connect():
+            raise ConnectionError("Unable to connect to dataBase")
 
-            print(f"\033[42mdb connected\033[0m")
-            self.expId = self.db.saveScenario(asdict(self.config.scenarioConf))
+        self.expId = self.db.saveScenario(asdict(self.config.scenarioConf))
+
+        self.logger.log(self.expId, textwrap.dedent(f"Experiment started with scenario: \n\
+                                   {self.config.scenarioConf}"))
 
         startTime = time.time()
         for udacityConfig in self.config:
@@ -35,18 +36,19 @@ class ExperimentRunner:
                 result = UdacitySimulator.simulate(simulator_config=udacityConfig)
                 output = asdict(result[0])
     
-                if self.log:
-                    print(f"\033[42minput:\n{input}\noutput:\n{output}\033[0m")
-                if self.persist:
-                    self.db.saveExperiment(self.expId, input, output)
+                self.logger.log(self.expId, textwrap.dedent(f"Experiment run executed\n\
+                                           input:\n\
+                                           {input}\n\
+                                           output:\n\
+                                           {output}"))
+                
+                self.db.saveExperiment(self.expId, input, output)
         
         endTime = time.time()
         expTime = endTime - startTime
 
-        if self.persist:
-            self.db.disconnect()
-        if self.log:
-            print(f"\033[42mexperiment id {self.expId}\033[0m")
-            print(f"\033[42mexperimentationTime: {expTime}\033[0m")
+        self.db.disconnect()
+
+        self.logger.log(self.expId, f"Experiment finished in {expTime} seconds")
 
         return self.expId, expTime
