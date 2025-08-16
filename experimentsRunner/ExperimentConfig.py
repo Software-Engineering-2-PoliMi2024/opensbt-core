@@ -10,6 +10,7 @@ import copy
 class ExperimentConfig:
     scenarioConf: UdacitySimulatorConfig
     searchFields: List[SearchField]
+    repetition: int
 
     def __post_init__(self):
         self.reset()

@@ -11,7 +11,8 @@
         {
             "label" : "minSpeed",
             "step" : 1,
-            "range" : [-20, -1]
+            "range" : [-20, -20]
         }
-    ]
+    ],
+    "repetition": 2
 }

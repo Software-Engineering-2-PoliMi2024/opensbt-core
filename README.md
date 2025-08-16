@@ -25,9 +25,9 @@ DB_URI = getenv('DB_URI')
 
 ## json input for experiment configurations
 
-the experiment configuration have two main objects in the hash:
+the experiment configuration have three main objects in the hash:
 
-first the `scenario` which defines the basic configuration.
+the **first part** is the `scenario` which defines the basic configuration.
 By default the scenario configuration is setted with the following values:
 
 ```py
@@ -43,12 +43,14 @@ segLength: float = 25.0  # Length of each segment in the road
 angles: List[int] = (0, 0, 0, 0, 0)
 ```
 
-the second part is the definition of an array of search parameters.
+the **second part** is the definition of an array of search parameters `searchParams`.
 Each search parameter is defined by three characteristics:
 
 - `label`: the name of the parameter to be modified in the simulation. Must match a key in the scenario object.
 - `step`: the step size for the parameter, which defines how much the parameter will change in each iteration.
 - `range`: a list of two values, the first is the minimum value and the second is the maximum value.
+
+the **third part** is the `repetition` which defines how many times the simulation will be run with the same configuration.
 
 an example of a json input file for an experiment configuration is the following:
 
@@ -68,7 +70,8 @@ an example of a json input file for an experiment configuration is the following
             "step" : 1,
             "range" : [-20, -1]
         }
-    ]
+    ],
+    "repetition": 2
 }
 ```
 

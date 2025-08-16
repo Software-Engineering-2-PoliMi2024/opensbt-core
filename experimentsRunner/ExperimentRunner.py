@@ -26,18 +26,19 @@ class ExperimentRunner:
 
         startTime = time.time()
         for udacityConfig in self.config:
-            input = {}
-
-            for f in self.config.searchFields:
-                input[f.label] = f.get()
-            
-            result = UdacitySimulator.simulate(simulator_config=udacityConfig)
-            output = asdict(result[0])
-
-            if self.log:
-                print(f"\033[42minput:\n{input}\noutput:\n{output}\033[0m")
-            if self.persist:
-                self.db.saveExperiment(self.expId, input, output)
+            for _ in range(self.config.repetition):
+                input = {}
+    
+                for f in self.config.searchFields:
+                    input[f.label] = f.get()
+                
+                result = UdacitySimulator.simulate(simulator_config=udacityConfig)
+                output = asdict(result[0])
+    
+                if self.log:
+                    print(f"\033[42minput:\n{input}\noutput:\n{output}\033[0m")
+                if self.persist:
+                    self.db.saveExperiment(self.expId, input, output)
         
         endTime = time.time()
         expTime = endTime - startTime

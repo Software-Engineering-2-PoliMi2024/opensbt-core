@@ -9,27 +9,39 @@ import orjson
 class ExperimentConfigParser:
     def parse(self, filePath: str, source: Callable[[str], Dict] = None) -> ExperimentConfig:
         if source is None:
-            source = lambda f: self.__loadJson(f)
+            source = lambda f: self._loadJson(f)
 
         conf = source(filePath)
 
-        scenarioConf = self.__loadScenatio(conf)
-        searchFields = self.__loadSearchFields(conf, scenarioConf)
+        scenarioConf = self._loadScenario(conf)
+        searchFields = self._loadSearchFields(conf, scenarioConf)
+        repetition = self._loadRepetiotion(conf)    
+        
 
-        return ExperimentConfig(scenarioConf, searchFields)
+        return ExperimentConfig(scenarioConf, searchFields, repetition)
 
-    def __loadScenatio(self, config: Dict) -> UdacitySimulatorConfig:
+    def _loadRepetiotion(self, config: Dict) -> int:
+        """load the times each experiment should be repeated"""
+        
+        repetition = config.get(fileLabels.REPETITION)
+        
+        if repetition is None or not isinstance(repetition, int) or repetition <= 0:
+            repetition = 1
+        
+        return repetition
+
+    def _loadScenario(self, config: Dict) -> UdacitySimulatorConfig:
         """load the scenario configuration from a configuration dictionary"""
         
         assert fileLabels.SCENARIO in config, f"Missing '{fileLabels.SCENARIO}' in configuration"
         return UdacitySimulatorConfig.fromDict(config[fileLabels.SCENARIO])
 
-    def __loadSearchFields(self, config: Dict, scenarioConf: UdacitySimulatorConfig) -> List[SearchField]:
+    def _loadSearchFields(self, config: Dict, scenarioConf: UdacitySimulatorConfig) -> List[SearchField]:
         """load the search fields from a configuration dictionary"""
         
         searchFields = []
-        parse_handlers= [((lambda l: self.__checkIfCallectionLabel(l)),
-                           lambda f, config: self.__parseCollection(f, config))
+        parse_handlers= [((lambda l: self._checkIfCallectionLabel(l)),
+                           lambda f, config: self._parseCollection(f, config))
                         ]
         loadedSearchConf = config.get(fileLabels.SEARCH_PAR)
 
@@ -40,7 +52,7 @@ class ExperimentConfigParser:
             for field in loadedSearchConf:
                 label = field[fileLabels.FIELD_LABEL]
 
-                if not self.__validSearchFieldLabel(label):
+                if not self._validSearchFieldLabel(label):
                     raise f"'{label}' is not correctly formatted"
                 
                 for k, v in parse_handlers:
@@ -58,7 +70,7 @@ class ExperimentConfigParser:
 
         return searchFields
 
-    def __loadJson(self, filePath: str) -> Dict:
+    def _loadJson(self, filePath: str) -> Dict:
         """load the config from a file using orjson"""
         config_data = None
         try:
@@ -72,13 +84,13 @@ class ExperimentConfigParser:
             assert config_data is not None, "unable to load experiment configuration"
             return config_data
         
-    def __validSearchFieldLabel(self, label: str) -> bool:
+    def _validSearchFieldLabel(self, label: str) -> bool:
         """check if the label of a search field is formatted correctly"""
         pattern = r'^([^[]+)(?:\[(\d*(?:,\d+)*)\])?'
         match = re.match(pattern, label)
         return match is not None
     
-    def __extractLabelGroups(self, label: str) -> Tuple[str, str]:
+    def _extractLabelGroups(self, label: str) -> Tuple[str, str]:
         """extract the name and index from a search field label"""
         pattern = r'^([^[]+)(?:\[([^\]]*)\])?'
     
@@ -89,20 +101,20 @@ class ExperimentConfigParser:
         index = match.group(2) if match.group(2) else None
         return name, index
     
-    def __checkIfCallectionLabel(self, label: str) -> bool:
+    def _checkIfCallectionLabel(self, label: str) -> bool:
         """check if the label of a search field is a collection label"""
         pattern = r'.*\[.*\].*'
         match = re.match(pattern, label)
         return match is not None
     
-    def __parseCollection(self, field: Dict, config: UdacitySimulatorConfig) -> Tuple[List[Dict], List[Callable]]:
+    def _parseCollection(self, field: Dict, config: UdacitySimulatorConfig) -> Tuple[List[Dict], List[Callable]]:
         label = field[fileLabels.FIELD_LABEL]
 
-        assert self.__checkIfCallectionLabel(label), f"'{label}' of a field which isn't a collection"
+        assert self._checkIfCallectionLabel(label), f"'{label}' of a field which isn't a collection"
         fields = []
         updateMethods = []
         
-        fieldName, index = self.__extractLabelGroups(label)
+        fieldName, index = self._extractLabelGroups(label)
         fieldSize = len(getattr(config, fieldName))
         indexes = []
 
