@@ -7,7 +7,7 @@ class DBinteract(ABC):
         pass
 
     @abstractmethod
-    def connect() -> bool:
+    def connect(self) -> bool:
         """Establish a connection to the database and return True if successful."""
         print("must be implemented in subclass")
         
@@ -36,7 +36,7 @@ class DBinteract(ABC):
         print("must be implemented in subclass")
         return {}
 
-    def disconnect(self):
+    def disconnect(self)-> None:
         """Disconnect from the database."""
         print("must be implemented in subclass")
-        return True
+        return
