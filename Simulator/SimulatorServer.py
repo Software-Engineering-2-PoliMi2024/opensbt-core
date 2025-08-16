@@ -7,7 +7,8 @@ import numpy as np
 from queue import Queue
 import uuid
 from threading import Thread
-from .lanekeeping import UdacitySimulatorConfig, UdacitySimulator, SimulationOutput
+from .lanekeeping import UdacitySimulator
+from UdacitySimulatorIO import UdacitySimulatorConfig, UdacitySimulationOutput
 
 
 app = FastAPI()
@@ -28,7 +29,7 @@ def simulationThread():
             results[jobId] = {'status' : 'simulating'}
 
             # Performs the simulation
-            simOutput: SimulationOutput = simulator.simulate(
+            simOutput: UdacitySimulationOutput = simulator.simulate(
                 simulator_config=config)
 
             # Parse the output into a json

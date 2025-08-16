@@ -1,7 +1,7 @@
 # imports related to OpenSBT
 # try:
 import time
-from .SimulationOutput import SimulationOutput
+from UdacitySimulatorIO import UdacitySimulationOutput, UdacitySimulatorConfig
 from .os_utils import kill_udacity_simulator
 
 # except ImportError as e:
@@ -26,7 +26,6 @@ from ..self_driving.road import Road
 from ..config import UDACITY_SIM_NAME, DNN_MODEL_PATH, INPUT_SHAPE, UDACITY_EXE_PATH, MAX_XTE, CAP_XTE
 
 from ..self_driving.supervised_agent import SupervisedAgent
-from .UdacitySimulatorConfig import UdacitySimulatorConfig as simConfig
 from typing import Callable
 class UdacitySimulator():
     def __init__(self) -> None:
@@ -49,7 +48,7 @@ class UdacitySimulator():
 
 
 
-    def simulate(self, simulator_config: simConfig) -> SimulationOutput:
+    def simulate(self, simulator_config: UdacitySimulatorConfig) -> UdacitySimulationOutput:
         """Runs a simulation with the given simulator configurations
 
         Args:
@@ -74,7 +73,7 @@ class UdacitySimulator():
 
         try:
             #Instantiate the output accumulator
-            simulationOutput = SimulationOutput()
+            simulationOutput = UdacitySimulationOutput()
 
             angles = simulator_config.angles
 
@@ -212,7 +211,7 @@ class UdacitySimulator():
         return time.time() - self.loopStartTime
 
 
-    def checkEndConditions(self, simulatorConfig: simConfig, xte: float, envDone:bool) -> None:
+    def checkEndConditions(self, simulatorConfig: UdacitySimulatorConfig, xte: float, envDone:bool) -> None:
         """This method checks if the end conditions for the simulation are met.
         If that's the case it stops the simulation using self.endSimulation()
 

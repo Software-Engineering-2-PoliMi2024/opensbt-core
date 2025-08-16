@@ -4,7 +4,8 @@ In this package you can find a UdacitySimulatorConfig class containing all the c
 To run a simulation you can do:
 
 ```python 
-from lanekeeping import UdacitySimulator, UdacitySimulatorConfig
+from lanekeeping import UdacitySimulator
+from UdacitySimulatorIO import UdacitySimulatorConfig
 
 udacityConfig = UdacitySimulatorConfig(maxTime=2)
 

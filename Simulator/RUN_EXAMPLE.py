@@ -1,4 +1,5 @@
-from lanekeeping import UdacitySimulator, UdacitySimulatorConfig
+from lanekeeping import UdacitySimulator
+from UdacitySimulatorIO import UdacitySimulatorConfig
 
 udacityConfig = UdacitySimulatorConfig(maxTime=2)
 
