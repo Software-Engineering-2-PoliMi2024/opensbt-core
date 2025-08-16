@@ -3,16 +3,19 @@ from typing import Dict, List
 
 class NoDB(DBinteract):
     def __init__(self):
-        return
-    
+        """NoDB is a placeholder for when no database interaction is needed."""
+
     def connect(self) -> bool:
         return True
     
     def saveScenario(self, scenarioConf: Dict) -> str:
-        return "NoDB - scenario not saved"
+        return "NoDB - scenario not persisted"
     
-    def saveExperiment(self, experimentId, input: Dict, output: Dict):
-        return "NoDB - scenario not saved"
+    def saveExperiment(self, experimentId, input: Dict, output: Dict) -> None:
+        return
+
+    def saveError(self, experimentId, error: str) -> None:
+        return
     
     def extractScenario(self, id) -> Dict:
         raise NotImplementedError("NoDB does not support scenario extraction")

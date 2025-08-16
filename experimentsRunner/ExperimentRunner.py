@@ -9,11 +9,13 @@ from dbInteract import NoDB
 import textwrap
 
 class ExperimentRunner:
-    def __init__(self, config: ExperimentConfig, db: DBinteract=NoDB, logger: ExperimentLogger=ExperimentLogger()):
+    def __init__(self, config: ExperimentConfig, db: DBinteract=NoDB(), 
+                 logger: ExperimentLogger=ExperimentLogger(), errorRetrayals: int=3):
         self.config = config
         self.db = db
         self.logger = logger
         self.expId = None
+        self.errorRetrayals = errorRetrayals
 
     def run(self) -> Tuple[str, float]:
 
@@ -22,27 +24,37 @@ class ExperimentRunner:
 
         self.expId = self.db.saveScenario(asdict(self.config.scenarioConf))
 
-        self.logger.log(self.expId, textwrap.dedent(f"Experiment started with scenario: \n\
-                                   {self.config.scenarioConf}"))
+        self.logger.log(self.expId, f"Experiment started with scenario:\n{self.config.scenarioConf}")
 
         startTime = time.time()
         for udacityConfig in self.config:
+            input = {}
+            
+            for f in self.config.searchFields:
+                input[f.label] = f.get()
+            
             for _ in range(self.config.repetition):
-                input = {}
-    
-                for f in self.config.searchFields:
-                    input[f.label] = f.get()
-                
-                result = UdacitySimulator.simulate(simulator_config=udacityConfig)
-                output = asdict(result[0])
-    
-                self.logger.log(self.expId, textwrap.dedent(f"Experiment run executed\n\
-                                           input:\n\
-                                           {input}\n\
-                                           output:\n\
-                                           {output}"))
-                
-                self.db.saveExperiment(self.expId, input, output)
+                retry_count = 0
+                success = False
+                while retry_count < self.errorRetrayals and not success:
+
+                    try:
+                        result = UdacitySimulator.simulate(simulator_config=udacityConfig)
+                        output = asdict(result[0])
+
+                        self.db.saveExperiment(self.expId, input, output)
+                        self.logger.log(self.expId, textwrap.dedent(f"Experiment run executed\n\ninput:\n{input}\n\noutput:\n{output}"))
+
+                        success = True
+
+                    except Exception as e:
+                        self.logger.log_error(self.expId, f"Error during simulation: {e}")
+                        self.db.saveError(self.expId, str(e))
+
+                        retry_count += 1
+
+                if not success:
+                    self.logger.log(self.expId, f"Experiment failed after {self.errorRetrayals} retries\nskippin input: {input}")
         
         endTime = time.time()
         expTime = endTime - startTime

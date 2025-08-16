@@ -35,12 +35,17 @@ class MongoInteract(DBinteract):
         result = self.db[dbLabels.SCENARIO_coll].insert_one(scenarioConf)
         return result.inserted_id
 
-    def saveExperiment(self, experimentId, input: Dict, output: Dict):
+    def saveExperiment(self, experimentId, input: Dict, output: Dict) -> None:
         exp = {"scenario": experimentId,
                "in": orjson.loads(orjson.dumps(input, option=orjson.OPT_SERIALIZE_NUMPY)), 
                "out": orjson.loads(orjson.dumps(output, option=orjson.OPT_SERIALIZE_NUMPY))
             }
         self.experimentToSave.put(exp)
+
+    def saveError(self, experimentId, error: str) -> None:
+        error = {"scenario": experimentId, "error": error}
+        self.db[dbLabels.EXP_ERR_coll].insert_one(error)
+        return
 
     def _persistExperiment(self, batch=1, timeSleep=1):
         while self.expSaverRun or not self.experimentToSave.empty():

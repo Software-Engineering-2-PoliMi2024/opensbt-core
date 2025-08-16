@@ -8,7 +8,7 @@ load_dotenv()
 DB_URI = getenv('DB_URI')
 
 parser: ExperimentConfigParser = ExperimentConfigParser()
-db: MongoInteract = MongoInteract(DB_URI)
+db = MongoInteract(DB_URI)
 expConfig: ExperimentConfig = parser.parse("./sample.json")
 expManager: ExperimentRunner = ExperimentRunner(expConfig, db)
 scenarioId, expTime = expManager.run()

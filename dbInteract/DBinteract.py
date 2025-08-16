@@ -16,10 +16,15 @@ class DBinteract(ABC):
         print("must be implemented in subclass")
         return ""
     
-    def saveExperiment(self, experimentId, input: Dict, output: Dict):
+    def saveExperiment(self, experimentId, input: Dict, output: Dict) -> None:
         """Save the experiment data to the database and return its ID."""
         print("must be implemented in subclass")
         return ""
+    
+    def saveError(self, experimentId, error: str) -> None:
+        """Save an error that occurred during the experiment to the database."""
+        print("must be implemented in subclass")
+        return
     
     def extractScenario(self, id) -> Dict:
         """Extract a scenario configuration from the database by its ID."""
