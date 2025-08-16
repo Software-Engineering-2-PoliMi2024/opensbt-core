@@ -6,7 +6,7 @@
 - Logger - CAP
 - Data analysis - PAOLO
 - General small improvements - PAOLO
-- .env for Mongo DB - CAP
+- ✅ .env for Mongo DB - CAP
 - Multi run in Json - CAP
 - Service structure - TONI
 - Parallelization (multi threading the simulator) - TONI

@@ -1,8 +1,11 @@
 from experimentsRunner import ExperimentConfigParser, ExperimentConfig
 from experimentsRunner import ExperimentRunner
 from dbInteract import MongoInteract
+from dotenv import load_dotenv
+from os import getenv
 
-DB_URI = 'mongodb+srv://matteo5figini:u1pJGtNXTqn5gTiP@se2db.tdibt7g.mongodb.net/?retryWrites=true&w=majority&appName=se2db'
+load_dotenv()
+DB_URI = getenv('DB_URI')
 
 parser: ExperimentConfigParser = ExperimentConfigParser()
 db: MongoInteract = MongoInteract(DB_URI)
