@@ -3,11 +3,14 @@ from experimentsRunner import ExperimentRunner
 from dbInteract import MongoInteract
 from dotenv import load_dotenv
 from os import getenv
+from experimentsRunner import ExperimentLogger
+import logging
 
 load_dotenv()
 DB_URI = getenv('DB_URI')
 
 parser: ExperimentConfigParser = ExperimentConfigParser()
+noLog = ExperimentLogger(handler=logging.NullHandler())
 db = MongoInteract(DB_URI)
 expConfig: ExperimentConfig = parser.parse("./sample.json")
 expManager: ExperimentRunner = ExperimentRunner(expConfig, db)

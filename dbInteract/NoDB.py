@@ -14,7 +14,7 @@ class NoDB(DBinteract):
     def saveExperiment(self, experimentId, input: Dict, output: Dict) -> None:
         return
 
-    def saveError(self, experimentId, error: str) -> None:
+    def saveError(self, experimentId, input: Dict, error: str) -> None:
         return
     
     def extractScenario(self, id) -> Dict:

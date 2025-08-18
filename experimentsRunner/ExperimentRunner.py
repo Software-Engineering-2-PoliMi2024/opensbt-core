@@ -49,7 +49,7 @@ class ExperimentRunner:
 
                     except Exception as e:
                         self.logger.log_error(self.expId, f"Error during simulation: {e}")
-                        self.db.saveError(self.expId, str(e))
+                        self.db.saveError(self.expId, input, str(e))
 
                         retry_count += 1
 

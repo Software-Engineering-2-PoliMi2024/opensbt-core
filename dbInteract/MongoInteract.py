@@ -42,8 +42,11 @@ class MongoInteract(DBinteract):
             }
         self.experimentToSave.put(exp)
 
-    def saveError(self, experimentId, error: str) -> None:
-        error = {"scenario": experimentId, "error": error}
+    def saveError(self, experimentId, input: Dict, error: str) -> None:
+        error = {"scenario": experimentId, 
+                 "in": orjson.loads(orjson.dumps(input, option=orjson.OPT_SERIALIZE_NUMPY)),
+                 "error": error
+                }
         self.db[dbLabels.EXP_ERR_coll].insert_one(error)
         return
 
