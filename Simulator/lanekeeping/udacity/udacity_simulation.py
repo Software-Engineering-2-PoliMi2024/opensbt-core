@@ -86,71 +86,55 @@ class UdacitySimulator():
             #Add the road configuration to the output
             simulationOutput.road = road.get_concrete_representation(to_plot=True)
             
-            # Convert it to the string reppresentation
+            # Convert it to the string representation
             waypoints : str = road.get_string_repr()
 
-            # Reset the enviroment, this also sets the road configuration
+            # Reset the environment, this also sets the road configuration
             obs = self.env.reset(skip_generation=False, track_string=waypoints)
 
             # This variable will contains the current speed, it is needed by the agent to compute the next action
             speed:float = 0
 
-            # This is the content of the main simulation loop
-            def loopingFunction():
-                #Variables coming from outside this function
-                nonlocal obs, speed, simulationOutput
-
-                # Infer next actions
-                actions = self.agent.predict(obs=obs,
-                                        state=dict(
-                                            speed=speed,
-                                            simulator_name=UDACITY_SIM_NAME
-                                            )
-                                        )
+            self.done = False
+            self.loopStartTime = time.time()
+            iterations = 0
+            
+            while not self.done:
+                # Infer next actions (moved inline)
+                actions = self.agent.predict(obs=obs, state=dict(speed=speed, simulator_name=UDACITY_SIM_NAME))
                 
-                # Clip action to avoid out of bound errors
+                # Clip actions inline
                 if isinstance(self.env.action_space, gym.spaces.Box): # type: ignore
-                    actions = np.clip(
-                        actions,
-                        self.env.action_space.low, # type: ignore
-                        self.env.action_space.high # type: ignore
-                    )
-
-                # Perform the actions and get the new obs is the image, info contains the road and the position of the car
+                    actions = np.clip(actions, self.env.action_space.low, self.env.action_space.high) # type: ignore
+                
+                # Environment step
                 obs, done, info = self.env.step(actions)
-
-                # Update the current speed
-                speed_candidate = info.get("speed", None)
-                speed = 0.0 if speed_candidate is None else speed_candidate
-
-                # Compute and cap (if necessary) the xte
+                
+                # Update speed
+                speed = info.get("speed", 0.0)
+                
+                # Compute XTE inline (avoid redundant calculations)
                 xte = info['cte']
-                xte_sign = 1 if xte == 0 else xte / abs(xte)
-                xte = abs(xte)
-                if xte > MAX_XTE and CAP_XTE:
-                    xte = MAX_XTE
-                xte *= xte_sign
-
-                # Add the stats of this iteration to the output
+                if CAP_XTE and abs(xte) > MAX_XTE:
+                    xte = MAX_XTE if xte > 0 else -MAX_XTE
+                
+                # Add stats
                 simulationOutput.addStats(
-                    position = info['pos'],
+                    position=info['pos'],
                     speed=speed,
                     xte=xte,
                     steering=actions[0][0],
                     throttle=actions[0][1]
                 )
-
-                #Check loop end conditions
-                self.checkEndConditions(
-                    simulatorConfig=simulator_config,
-                    xte = info["cte"],
-                    envDone=done
-                    )
-
-            # Execute the main loop
-            elapsedTime, iterations = self.timedConditionalLoop(
-                loopingFunction=loopingFunction
-            )
+                
+                # Check end conditions inline
+                elapsed = time.time() - self.loopStartTime
+                if elapsed > simulator_config.maxTime or abs(info["cte"]) > simulator_config.maxXTE or done:
+                    self.done = True
+                
+                iterations += 1
+            
+            elapsedTime = time.time() - self.loopStartTime
 
             # Reset the environment
             self.env.reset(skip_generation=False, track_string=waypoints)
@@ -171,63 +155,3 @@ class UdacitySimulator():
         """
         self.env.close()
         kill_udacity_simulator()
-
-    def endSimulation(self):
-        """
-        This method stops the simulation loop.
-        When this is called the current loop iteration becomes the last one.
-        After that the simulation outputs are computed and returned
-        """
-        self.done = True
-
-    def timedConditionalLoop(self, loopingFunction : Callable) -> Tuple[float, int]:
-        """A method to run and time a conditional loop. The loop keeps calling the loopingFunction
-        until the self.endSimulation method is called.
-
-        Args:
-            loopingFunction (Callable): the function to be called inside the loop
-
-        Returns:
-            Tuple[float, int]: Returns the elapsed time in seconds and the number of executed iterations
-        """
-        self.done = False
-        self.loopStartTime = time.time()
-        iterations = 0
-
-        while not self.done:
-            loopingFunction()
-            iterations += 1
-        
-        elapsedTime = self.getElapsedTime()
-        return elapsedTime, iterations
-
-    def getElapsedTime(self) -> float:
-        """Computes  and returns the elapsed time in seconds since the beginning of the main loop
-
-        Returns:
-            float: the elapsed time in seconds since the beginning of the main loop
-        """
-
-        return time.time() - self.loopStartTime
-
-
-    def checkEndConditions(self, simulatorConfig: UdacitySimulatorConfig, xte: float, envDone:bool) -> None:
-        """This method checks if the end conditions for the simulation are met.
-        If that's the case it stops the simulation using self.endSimulation()
-
-        Args:
-            simulatorConfig (simConfig): The current config of the simulation
-            xte (float): The current xte
-            envDone(bool): The done signal coming for the gym env
-        """
-        # Exceeded maximum time
-        simShouldEnd = self.getElapsedTime() > simulatorConfig.maxTime
-
-        # Exceeded maximum error
-        simShouldEnd = simShouldEnd or abs(xte) > simulatorConfig.maxXTE
-
-        #Env Done
-        simShouldEnd = simShouldEnd or envDone
-
-        if simShouldEnd:
-            self.endSimulation()
