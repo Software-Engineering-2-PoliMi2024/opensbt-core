@@ -49,13 +49,13 @@ docs/_build/**
 docs/build/**
 
 #Simulator
-Simulator/Simulator/
+Simulator/SimulatorExec/*
 
 #Model
-Simulator/SelfDrivingModels/
-Simulator/SelfDrivingModels/keep.txt
+Simulator/SelfDrivingModels/*
 
 unitylog.txt
 
+!.gitkeep
 *.env
 **/.conda

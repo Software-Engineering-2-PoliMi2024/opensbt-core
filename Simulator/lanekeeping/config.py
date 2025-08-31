@@ -6,7 +6,7 @@ DNN_MODEL_PATH = r"./Simulator/SelfDrivingModels/mixed-chauffeur.h5"
 
 
 # Simulators
-UDACITY_EXE_PATH = "./Simulator/Simulator/ubuntu_binaries/ubuntu.x86_64"
+UDACITY_EXE_PATH = "./Simulator/SimulatorExec/ubuntu_binaries/ubuntu.x86_64"
 
 ################
 
